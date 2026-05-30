@@ -5,7 +5,7 @@ from PyQt6.QtGui import QColor, QFont
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QComboBox, QSlider,
     QSpinBox, QDoubleSpinBox, QPushButton, QLabel, QFrame,
-    QColorDialog, QMessageBox,
+    QColorDialog, QMessageBox, QCheckBox,
 )
 
 from app_state import DEFAULT_CONFIG
@@ -42,6 +42,7 @@ class SettingsWindow(QWidget):
         self._loading = True
         self._color = state.config.get("font_color", "#f0e6d2")
         self._bg_color = state.config.get("bg_color", "#121218")
+        self._border_color = state.config.get("border_color", "#7882a0")
 
         self.setWindowTitle("PoE2 Campaign Overlay — Settings")
         self.setMinimumWidth(400)
@@ -94,6 +95,18 @@ class SettingsWindow(QWidget):
         bg_row.addWidget(self.bg_swatch)
         bg_row.addStretch(1)
         form.addRow("Background color:", self._wrap(bg_row))
+
+        # Border color — click the swatch to open the picker
+        self.border_swatch = ClickableSwatch(self._pick_border_color)
+        border_row = QHBoxLayout()
+        border_row.addWidget(self.border_swatch)
+        border_row.addStretch(1)
+        form.addRow("Border color:", self._wrap(border_row))
+
+        # Border toggle
+        self.border_checkbox = QCheckBox("Show border")
+        self.border_checkbox.toggled.connect(self._on_border_toggled)
+        form.addRow("", self.border_checkbox)
 
         # Scale
         self.scale_spin = QDoubleSpinBox()
@@ -151,8 +164,11 @@ class SettingsWindow(QWidget):
         self.scale_spin.setValue(float(cfg.get("scale", 1.0)))
         self._color = cfg.get("font_color", "#f0e6d2")
         self._bg_color = cfg.get("bg_color", "#121218")
+        self._border_color = cfg.get("border_color", "#7882a0")
+        self.border_checkbox.setChecked(bool(cfg.get("border_enabled", True)))
         self._update_swatch()
         self._update_bg_swatch()
+        self._update_border_swatch()
         self._loading = False
 
     def _select_font(self, family):
@@ -185,6 +201,12 @@ class SettingsWindow(QWidget):
             f"border: 1px solid #555; border-radius: 4px; }}"
         )
 
+    def _update_border_swatch(self):
+        self.border_swatch.setStyleSheet(
+            f"#Swatch {{ background: {self._border_color}; "
+            f"border: 1px solid #555; border-radius: 4px; }}"
+        )
+
     # ----- handlers ------------------------------------------------------
     def _pick_color(self):
         chosen = QColorDialog.getColor(
@@ -203,6 +225,20 @@ class SettingsWindow(QWidget):
             self._bg_color = chosen.name()
             self._update_bg_swatch()
             self._on_style_changed()
+
+    def _pick_border_color(self):
+        chosen = QColorDialog.getColor(
+            QColor(self._border_color), self, "Choose border color"
+        )
+        if chosen.isValid():
+            self._border_color = chosen.name()
+            self._update_border_swatch()
+            self._on_style_changed()
+
+    def _on_border_toggled(self, _checked):
+        if self._loading:
+            return
+        self._on_style_changed()
 
     def _on_trans_slider(self, value):
         if self._loading:
@@ -236,6 +272,8 @@ class SettingsWindow(QWidget):
         cfg["scale"] = round(self.scale_spin.value(), 2)
         cfg["font_color"] = self._color
         cfg["bg_color"] = self._bg_color
+        cfg["border_color"] = self._border_color
+        cfg["border_enabled"] = self.border_checkbox.isChecked()
         self.state.save_config()
         self.overlay.apply_style()
 
