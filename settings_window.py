@@ -170,7 +170,7 @@ class SettingsWindow(QWidget):
         index = self.font_combo.findText(family)
         if index < 0:
             self.font_combo.addItem(family)
-            index = self.font_combo.findText(family)
+            index = self.font_combo.count() - 1
         self.font_combo.setCurrentIndex(index)
         self._preview_font(family)
 
