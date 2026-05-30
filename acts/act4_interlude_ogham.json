@@ -3,12 +3,6 @@
   "name": "Interlude — Ogham",
   "order": 4,
   "items": [
-    { "id": "io-s1", "text": "Return to Ogham at Doryani's request" },
-    { "id": "io-s2", "text": "Scorched Farmlands: defeat Isolde and Heldra" },
-    { "id": "io-s3", "text": "Stones of Serai: clear the darkened ruins" },
-    { "id": "io-s4", "text": "Holten: clear the area" },
-    { "id": "io-s5", "text": "Wolvenhold: defeat Oswin, the Dread Warden" },
-
     { "id": "io-sp1", "category": "Skill Points & Bonuses", "text": "Wolvenhold: Oswin, the Dread Warden → +2 passive skill points" }
   ]
 }

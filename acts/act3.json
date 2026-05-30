@@ -3,16 +3,6 @@
   "name": "Act 3 — Chimeral Jungle",
   "order": 3,
   "items": [
-    { "id": "a3-s1", "text": "Reach Ziggurat Encampment (town)" },
-    { "id": "a3-s2", "text": "Sandswept Marsh → Infested Barrens" },
-    { "id": "a3-s3", "text": "Jungle Ruins: defeat Mighty Silverfist" },
-    { "id": "a3-s4", "text": "Venom Crypts: recover the Venom Vial for Servi" },
-    { "id": "a3-s5", "text": "Chimeral Wetlands → The Matlan Waterways" },
-    { "id": "a3-s6", "text": "Jiquani's Machinarium: deliver the Soul Core, defeat Blackjaw, the Remnant" },
-    { "id": "a3-s7", "text": "Jiquani's Sanctum → The Drowned City" },
-    { "id": "a3-s8", "text": "Aggorat → Utzaal" },
-    { "id": "a3-s9", "text": "The Black Chambers: defeat Doryani (Act boss)" },
-
     { "id": "a3-asc", "category": "Ascendancy", "text": "Complete the Trial of Chaos (Ascendancy)" },
 
     { "id": "a3-sp1", "category": "Skill Points & Bonuses", "text": "Jungle Ruins: Mighty Silverfist → +2 weapon-set skill points" },
