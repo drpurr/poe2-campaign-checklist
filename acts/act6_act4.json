@@ -3,19 +3,6 @@
   "name": "Act 4 — The Third Edict",
   "order": 6,
   "items": [
-    { "id": "a4-n0", "category": "Story", "text": "Note: Act 4 (the islands of Ngamakanui) is non-linear — boss order may vary" },
-    { "id": "a4-s1", "category": "Story", "text": "Isle of Kin: defeat The Blind Beast" },
-    { "id": "a4-s2", "category": "Story", "text": "Volcanic Warrens: defeat Krutog, Lord of Kin" },
-    { "id": "a4-s3", "category": "Story", "text": "Journey's End: defeat Captain Hartlin" },
-    { "id": "a4-s4", "category": "Story", "text": "Shrike Island: defeat Scourge of the Skies" },
-    { "id": "a4-s5", "category": "Story", "text": "Whakapanu Island: defeat the Great White One" },
-    { "id": "a4-s6", "category": "Story", "text": "Singing Caverns: defeat Diamora, Song of Death" },
-    { "id": "a4-s7", "category": "Story", "text": "Solitary Confinement: defeat The Prisoner" },
-    { "id": "a4-s8", "category": "Story", "text": "Arastas: defeat Torvian, Hand of the Saviour" },
-    { "id": "a4-s9", "category": "Story", "text": "The Excavation: defeat Benedictus, First Herald of Utopia" },
-    { "id": "a4-s10", "category": "Story", "text": "Halls of the Dead: defeat Yama the White" },
-    { "id": "a4-s11", "category": "Story", "text": "Heart of the Tribe: defeat Tavakai, the Chieftain (Act boss, 3 phases)" },
-
     { "id": "a4-asc", "category": "Ascendancy", "text": "Complete the Trail of the Ancestors, speak to Hinekora → +2 weapon-set skill points" },
 
     { "id": "a4-sp1", "category": "Skill Points & Bonuses", "text": "Isle of Kin: The Blind Beast → +2 weapon-set skill points" },

@@ -26,8 +26,9 @@ DEFAULT_CONFIG = {
     "current_act": None,
     "transparency": 0.85,        # background panel alpha, 0.2 - 1.0
     "font_size": 14,             # base text size in points
-    "font_family": "Segoe UI",
+    "font_family": "Roboto",     # a Google Font family
     "font_color": "#f0e6d2",     # PoE-ish parchment color
+    "bg_color": "#121218",       # overlay panel background color
     "scale": 1.0,                # global UI scale multiplier, 0.5 - 3.0
     "overlay_geometry": None,    # [x, y, w, h]
 }
@@ -111,6 +112,11 @@ class AppState:
         self.progress[act_id] = {}
         self.save_progress()
 
+    def reset_all_progress(self):
+        """Clear every checkmark across all acts."""
+        self.progress = {}
+        self.save_progress()
+
     def act_completion(self, act_id):
         """Return (done, total) for the given act."""
         act = self.acts_by_id.get(act_id)
@@ -123,3 +129,52 @@ class AppState:
     @property
     def current_act(self):
         return self.acts_by_id.get(self.config.get("current_act"))
+
+    def go_to_next_act(self):
+        """Advance the current act to the next one in order.
+
+        Returns True if the act changed, False if already on the last act.
+        """
+        if not self.acts:
+            return False
+        ids = [a["id"] for a in self.acts]
+        try:
+            idx = ids.index(self.config.get("current_act"))
+        except ValueError:
+            idx = -1
+        if idx + 1 >= len(ids):
+            return False
+        self.config["current_act"] = ids[idx + 1]
+        self.save_config()
+        return True
+
+    def go_to_prev_act(self):
+        """Step the current act back to the previous one in order.
+
+        Returns True if the act changed, False if already on the first act.
+        """
+        if not self.acts:
+            return False
+        ids = [a["id"] for a in self.acts]
+        try:
+            idx = ids.index(self.config.get("current_act"))
+        except ValueError:
+            idx = -1
+        if idx <= 0:
+            return False
+        self.config["current_act"] = ids[idx - 1]
+        self.save_config()
+        return True
+
+    def set_current_act(self, act_id):
+        """Select ``act_id`` as the current act.
+
+        Returns True if the act changed, False otherwise (unknown id or no-op).
+        """
+        if act_id not in self.acts_by_id:
+            return False
+        if self.config.get("current_act") == act_id:
+            return False
+        self.config["current_act"] = act_id
+        self.save_config()
+        return True

@@ -1,11 +1,21 @@
 """The always-on-top checklist overlay window."""
 
 from PyQt6.QtCore import Qt, QRect, pyqtSignal
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QColor, QFont
 from PyQt6.QtWidgets import (
     QWidget, QFrame, QLabel, QCheckBox, QVBoxLayout, QHBoxLayout,
-    QScrollArea, QToolButton, QSizePolicy, QApplication,
+    QScrollArea, QToolButton, QSizePolicy, QComboBox, QApplication,
 )
+
+from google_fonts import ensure_font
+
+
+def _hex_to_rgb(value):
+    """Convert a ``#rrggbb`` color string to an (r, g, b) tuple."""
+    color = QColor(value)
+    if not color.isValid():
+        color = QColor("#121218")
+    return color.red(), color.green(), color.blue()
 
 
 class ChecklistItemWidget(QWidget):
@@ -87,6 +97,7 @@ class OverlayWindow(QWidget):
         super().__init__()
         self.state = state
         self.on_open_settings = None  # set by main.py
+        self.on_act_changed = None  # set by main.py to sync the settings window
 
         self.resize_enabled = False
         self._drag_pos = None
@@ -96,6 +107,7 @@ class OverlayWindow(QWidget):
         self._start_mouse = None
         self.item_widgets = []
         self.category_labels = []
+        self._loading_combo = False
 
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint
@@ -123,25 +135,52 @@ class OverlayWindow(QWidget):
         card_layout.setContentsMargins(14, 10, 14, 14)
         card_layout.setSpacing(8)
 
-        # Header: title + progress + settings gear
+        # Header: act selector + progress + prev/next act + close + settings gear
         header = QHBoxLayout()
-        self.title_label = QLabel("PoE2 Overlay")
-        self.title_label.setObjectName("Title")
-        # Wrap + zero min width so a long act name never forces the window wide.
-        self.title_label.setWordWrap(True)
-        self.title_label.setMinimumWidth(0)
+        self.act_combo = QComboBox()
+        self.act_combo.setObjectName("ActCombo")
+        self.act_combo.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.act_combo.setToolTip("Switch act")
+        self.act_combo.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred
+        )
+        self.act_combo.setMinimumWidth(0)
+        for act in self.state.acts:
+            self.act_combo.addItem(act.get("name", "Act"), act["id"])
+        self.act_combo.currentIndexChanged.connect(self._on_combo_changed)
         self.progress_label = QLabel("")
         self.progress_label.setObjectName("Progress")
+        self.prev_btn = QToolButton()
+        self.prev_btn.setObjectName("PrevBtn")
+        self.prev_btn.setText("⏮")  # previous act
+        self.prev_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.prev_btn.setToolTip("Go to previous act")
+        self.prev_btn.clicked.connect(self._prev_act)
+        self.next_btn = QToolButton()
+        self.next_btn.setObjectName("NextBtn")
+        self.next_btn.setText("⏭")  # next act
+        self.next_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.next_btn.setToolTip("Go to next act")
+        self.next_btn.clicked.connect(self._next_act)
         self.gear_btn = QToolButton()
         self.gear_btn.setObjectName("GearBtn")
         self.gear_btn.setText("⚙")  # gear
         self.gear_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.gear_btn.setToolTip("Open settings")
         self.gear_btn.clicked.connect(self._open_settings)
-        header.addWidget(self.title_label, 1)
+        self.close_btn = QToolButton()
+        self.close_btn.setObjectName("CloseBtn")
+        self.close_btn.setText("✕")  # close
+        self.close_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.close_btn.setToolTip("Hide overlay")
+        self.close_btn.clicked.connect(self.hide)
+        header.addWidget(self.act_combo, 1)
         header.addStretch(0)
         header.addWidget(self.progress_label)
+        header.addWidget(self.prev_btn)
+        header.addWidget(self.next_btn)
         header.addWidget(self.gear_btn)
+        header.addWidget(self.close_btn)
         card_layout.addLayout(header)
 
         # Scrollable checklist
@@ -185,11 +224,11 @@ class OverlayWindow(QWidget):
 
         act = self.state.current_act
         if not act:
-            self.title_label.setText("No acts found")
+            self._sync_combo_selection()
             self.progress_label.setText("")
             return
 
-        self.title_label.setText(act.get("name", "Act"))
+        self._sync_combo_selection()
         insert_at = self.items_layout.count() - 1
         last_category = None
         for item in act["items"]:
@@ -214,6 +253,7 @@ class OverlayWindow(QWidget):
             self.item_widgets.append(row)
 
         self._update_progress_label()
+        self._update_nav()
         self.apply_style()
 
     def _on_item_toggled(self, item_id, checked):
@@ -230,16 +270,48 @@ class OverlayWindow(QWidget):
         done, total = self.state.act_completion(act["id"])
         self.progress_label.setText(f"{done}/{total}")
 
+    def _sync_combo_selection(self):
+        """Select the current act in the combo without re-triggering changes."""
+        current = self.state.config.get("current_act")
+        index = self.act_combo.findData(current)
+        if index < 0 or index == self.act_combo.currentIndex():
+            return
+        self._loading_combo = True
+        self.act_combo.setCurrentIndex(index)
+        self._loading_combo = False
+
+    def _on_combo_changed(self, _index):
+        """Switch to the act picked from the overlay dropdown."""
+        if self._loading_combo:
+            return
+        act_id = self.act_combo.currentData()
+        if self.state.set_current_act(act_id):
+            self.rebuild_items()
+            if self.on_act_changed:
+                self.on_act_changed()
+
+    def _update_nav(self):
+        """Disable the prev/next buttons at the ends of the act list."""
+        acts = self.state.acts
+        current = self.state.config.get("current_act")
+        ids = [a["id"] for a in acts]
+        idx = ids.index(current) if current in ids else -1
+        self.prev_btn.setEnabled(idx > 0)
+        self.next_btn.setEnabled(0 <= idx < len(ids) - 1)
+
     # ----- styling -------------------------------------------------------
     def apply_style(self):
         cfg = self.state.config
         scale = float(cfg.get("scale", 1.0))
         font_size = max(6, int(round(cfg.get("font_size", 14) * scale)))
-        family = cfg.get("font_family", "Segoe UI")
+        family = cfg.get("font_family", "Roboto")
+        ensure_font(family)
         color = cfg.get("font_color", "#f0e6d2")
         alpha = float(cfg.get("transparency", 0.85))
+        bg_color = cfg.get("bg_color", "#121218")
 
-        bg = f"rgba(18, 18, 24, {alpha:.3f})"
+        r, g, b = _hex_to_rgb(bg_color)
+        bg = f"rgba({r}, {g}, {b}, {alpha:.3f})"
         accent = "#5cb85c"
         indicator = max(12, int(round(16 * scale)))
         radius = max(2, int(round(3 * scale)))
@@ -255,15 +327,47 @@ class OverlayWindow(QWidget):
                 border-radius: 10px;
             }}
             QLabel {{ color: {color}; background: transparent; }}
-            #Title {{ color: {color}; font-weight: 700; }}
             #Progress {{ color: rgba(255,255,255,0.65); }}
             #Category {{ color: {accent}; font-weight: 700; }}
             #Hint {{ color: #6ca0ff; }}
+            QComboBox#ActCombo {{
+                color: {color}; background: transparent;
+                border: none; font-weight: 700;
+                padding: 0 2px;
+            }}
+            QComboBox#ActCombo::drop-down {{
+                border: none; width: {font_size + 6}px;
+            }}
+            QComboBox#ActCombo::down-arrow {{
+                width: 0; height: 0;
+                border-left: {max(3, font_size // 3)}px solid transparent;
+                border-right: {max(3, font_size // 3)}px solid transparent;
+                border-top: {max(3, font_size // 3)}px solid {color};
+                margin-right: 4px;
+            }}
+            QComboBox#ActCombo QAbstractItemView {{
+                background: {bg}; color: {color};
+                selection-background-color: {accent};
+                selection-color: #ffffff;
+                border: 1px solid rgba(120, 130, 160, 0.6);
+                outline: none;
+            }}
             QToolButton#GearBtn {{
                 color: {color}; background: transparent; border: none;
                 font-size: {font_size + 4}px; padding: 0 2px;
             }}
             QToolButton#GearBtn:hover {{ color: #ffffff; }}
+            QToolButton#PrevBtn, QToolButton#NextBtn, QToolButton#CloseBtn {{
+                color: {color}; background: transparent; border: none;
+                font-size: {font_size + 4}px; padding: 0 2px;
+            }}
+            QToolButton#PrevBtn:hover, QToolButton#NextBtn:hover,
+            QToolButton#CloseBtn:hover {{
+                color: #ffffff;
+            }}
+            QToolButton#PrevBtn:disabled, QToolButton#NextBtn:disabled {{
+                color: rgba(255,255,255,0.25);
+            }}
             QCheckBox {{ background: transparent; }}
             QCheckBox::indicator {{
                 width: {indicator}px; height: {indicator}px;
@@ -296,7 +400,7 @@ class OverlayWindow(QWidget):
         title_font.setBold(True)
         small_font = QFont(family, max(6, font_size - 2))
 
-        self.title_label.setFont(title_font)
+        self.act_combo.setFont(title_font)
         self.progress_label.setFont(small_font)
         self.hint_label.setFont(small_font)
         for label in self.category_labels:
@@ -438,3 +542,17 @@ class OverlayWindow(QWidget):
     def _open_settings(self):
         if self.on_open_settings:
             self.on_open_settings()
+
+    def _next_act(self):
+        """Advance to the next act and refresh the overlay."""
+        if self.state.go_to_next_act():
+            self.rebuild_items()
+            if self.on_act_changed:
+                self.on_act_changed()
+
+    def _prev_act(self):
+        """Step back to the previous act and refresh the overlay."""
+        if self.state.go_to_prev_act():
+            self.rebuild_items()
+            if self.on_act_changed:
+                self.on_act_changed()
