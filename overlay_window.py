@@ -97,6 +97,7 @@ class OverlayWindow(QWidget):
         super().__init__()
         self.state = state
         self.on_open_settings = None  # set by main.py
+        self.on_quit = None  # set by main.py
         self.on_act_changed = None  # set by main.py to sync the settings window
 
         self.resize_enabled = False
@@ -168,19 +169,19 @@ class OverlayWindow(QWidget):
         self.gear_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.gear_btn.setToolTip("Open settings")
         self.gear_btn.clicked.connect(self._open_settings)
-        self.close_btn = QToolButton()
-        self.close_btn.setObjectName("CloseBtn")
-        self.close_btn.setText("✕")  # close
-        self.close_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.close_btn.setToolTip("Hide overlay")
-        self.close_btn.clicked.connect(self.hide)
+        self.exit_btn = QToolButton()
+        self.exit_btn.setObjectName("ExitBtn")
+        self.exit_btn.setText("✕")  # exit
+        self.exit_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.exit_btn.setToolTip("Exit")
+        self.exit_btn.clicked.connect(self._quit)
         header.addWidget(self.act_combo, 1)
         header.addStretch(0)
         header.addWidget(self.progress_label)
         header.addWidget(self.prev_btn)
         header.addWidget(self.next_btn)
         header.addWidget(self.gear_btn)
-        header.addWidget(self.close_btn)
+        header.addWidget(self.exit_btn)
         card_layout.addLayout(header)
 
         # Scrollable checklist
@@ -357,14 +358,14 @@ class OverlayWindow(QWidget):
                 font-size: {font_size + 4}px; padding: 0 2px;
             }}
             QToolButton#GearBtn:hover {{ color: #ffffff; }}
-            QToolButton#PrevBtn, QToolButton#NextBtn, QToolButton#CloseBtn {{
+            QToolButton#PrevBtn, QToolButton#NextBtn, QToolButton#ExitBtn {{
                 color: {color}; background: transparent; border: none;
                 font-size: {font_size + 4}px; padding: 0 2px;
             }}
-            QToolButton#PrevBtn:hover, QToolButton#NextBtn:hover,
-            QToolButton#CloseBtn:hover {{
+            QToolButton#PrevBtn:hover, QToolButton#NextBtn:hover {{
                 color: #ffffff;
             }}
+            QToolButton#ExitBtn:hover {{ color: #ff6b6b; }}
             QToolButton#PrevBtn:disabled, QToolButton#NextBtn:disabled {{
                 color: rgba(255,255,255,0.25);
             }}
@@ -542,6 +543,12 @@ class OverlayWindow(QWidget):
     def _open_settings(self):
         if self.on_open_settings:
             self.on_open_settings()
+
+    def _quit(self):
+        if self.on_quit:
+            self.on_quit()
+        else:
+            self.close()
 
     def _next_act(self):
         """Advance to the next act and refresh the overlay."""

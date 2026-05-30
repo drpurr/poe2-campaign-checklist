@@ -12,7 +12,7 @@ all style settings are remembered between sessions.
 - **Always-on-top overlay** that floats over the game (use Windowed or Borderless mode — see note below).
 - **Per-act checklists** for Acts 1–4 and the Ogham / Vastiri / Kriar Interludes — real campaign content (bosses, ascendancy trials, skill-point quests), stored as plain JSON files you can freely edit.
 - **Check off objectives** — completed items get a strike-through; progress shows as `done/total` in the header.
-- **Switch acts right from the overlay header** — pick any act from the title dropdown, or step to the previous (⏮) / next (⏭) act, or **hide the overlay** (✕) without using the tray.
+- **Switch acts right from the overlay header** — pick any act from the title dropdown, or step to the previous (⏮) / next (⏭) act, or **exit the program** (✕) without using the tray.
 - **Remembers everything**: current act, checkmarks, overlay size/position, and style.
 - **Separate settings window** with live preview:
   - Transparency (drag the slider or type an exact percentage)
@@ -36,7 +36,8 @@ all style settings are remembered between sessions.
 2. Double-click **`run.bat`** to launch the overlay.
 
 The overlay appears in the top-right of your primary screen. Click the **⚙ gear**
-in its header (or the tray icon) to open **Settings**.
+in its header (or the tray icon) to open **Settings**. Click the **✕** in the
+header to exit the program (the tray menu's **Quit** does the same).
 
 ## Build a standalone .exe (optional)
 
