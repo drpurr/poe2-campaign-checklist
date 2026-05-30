@@ -55,13 +55,6 @@ class SettingsWindow(QWidget):
         form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
         form.setSpacing(10)
 
-        # Current act
-        self.act_combo = QComboBox()
-        for act in state.acts:
-            self.act_combo.addItem(act["name"], act["id"])
-        self.act_combo.currentIndexChanged.connect(self._on_act_changed)
-        form.addRow("Current Act:", self.act_combo)
-
         # Transparency: slider + manual numeric entry
         self.trans_slider = QSlider(Qt.Orientation.Horizontal)
         self.trans_slider.setRange(20, 100)
@@ -150,9 +143,6 @@ class SettingsWindow(QWidget):
     def _load_from_config(self):
         self._loading = True
         cfg = self.state.config
-        index = self.act_combo.findData(cfg.get("current_act"))
-        if index >= 0:
-            self.act_combo.setCurrentIndex(index)
         trans_pct = int(round(cfg.get("transparency", 0.85) * 100))
         self.trans_slider.setValue(trans_pct)
         self.trans_spin.setValue(trans_pct)
@@ -235,13 +225,6 @@ class SettingsWindow(QWidget):
             return
         self._preview_font(self.font_combo.currentText())
         self._on_style_changed()
-
-    def _on_act_changed(self, _index):
-        if self._loading:
-            return
-        self.state.config["current_act"] = self.act_combo.currentData()
-        self.state.save_config()
-        self.overlay.rebuild_items()
 
     def _on_style_changed(self, *_):
         if self._loading:

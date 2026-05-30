@@ -147,3 +147,34 @@ class AppState:
         self.config["current_act"] = ids[idx + 1]
         self.save_config()
         return True
+
+    def go_to_prev_act(self):
+        """Step the current act back to the previous one in order.
+
+        Returns True if the act changed, False if already on the first act.
+        """
+        if not self.acts:
+            return False
+        ids = [a["id"] for a in self.acts]
+        try:
+            idx = ids.index(self.config.get("current_act"))
+        except ValueError:
+            idx = -1
+        if idx <= 0:
+            return False
+        self.config["current_act"] = ids[idx - 1]
+        self.save_config()
+        return True
+
+    def set_current_act(self, act_id):
+        """Select ``act_id`` as the current act.
+
+        Returns True if the act changed, False otherwise (unknown id or no-op).
+        """
+        if act_id not in self.acts_by_id:
+            return False
+        if self.config.get("current_act") == act_id:
+            return False
+        self.config["current_act"] = act_id
+        self.save_config()
+        return True
