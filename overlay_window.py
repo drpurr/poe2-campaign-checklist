@@ -141,7 +141,7 @@ class OverlayWindow(QWidget):
         self.gear_btn.clicked.connect(self._open_settings)
         self.exit_btn = QToolButton()
         self.exit_btn.setObjectName("ExitBtn")
-        self.exit_btn.setText("✕")  # close
+        self.exit_btn.setText("✕")  # exit
         self.exit_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.exit_btn.setToolTip("Exit")
         self.exit_btn.clicked.connect(self._quit)
