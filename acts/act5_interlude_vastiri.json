@@ -1,0 +1,14 @@
+{
+  "id": "interlude_vastiri",
+  "name": "Interlude — Vastiri",
+  "order": 5,
+  "items": [
+    { "id": "iv-s1", "category": "Story", "text": "Return to the Vastiri Desert" },
+    { "id": "iv-s2", "category": "Story", "text": "The Khari Crossing: push toward the Faridun camp" },
+    { "id": "iv-s3", "category": "Story", "text": "Recover the Stolen Barya: defeat Azmadi, the Faridun Prince" },
+    { "id": "iv-s4", "category": "Story", "text": "Continue Doryani's errand toward Act 4" },
+
+    { "id": "iv-sp1", "category": "Skill Points & Bonuses", "text": "Complete 'Clearing the Way': slay the Worm and the Scorpion → +2 weapon-set skill points" },
+    { "id": "iv-sp2", "category": "Skill Points & Bonuses", "text": "Skullmaw Stairway (off The Khari Crossing): get the Molten One's Gift → +5% Maximum Life" }
+  ]
+}

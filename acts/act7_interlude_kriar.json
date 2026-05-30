@@ -1,0 +1,17 @@
+{
+  "id": "interlude_kriar",
+  "name": "Interlude — Kriar (post Act 4)",
+  "order": 7,
+  "items": [
+    { "id": "ik-s1", "category": "Story", "text": "Begin the Kriar Interlude after Act 4" },
+    { "id": "ik-s2", "category": "Story", "text": "Kriar Village: defeat Lythara, the Wayward Spear" },
+    { "id": "ik-s3", "category": "Story", "text": "Howling Caves: defeat The Abominable Yeti" },
+    { "id": "ik-s4", "category": "Story", "text": "Glacial Tarn: defeat Rakkar, the Frozen Talon" },
+    { "id": "ik-s5", "category": "Story", "text": "Etched Ravine: defeat Stormgore, the Guardian" },
+    { "id": "ik-s6", "category": "Story", "text": "The Cuachic Vault: defeat Zelina, Blood Priestess & Zolin, Blood Priest" },
+
+    { "id": "ik-sp1", "category": "Skill Points & Bonuses", "text": "Kriar Village: Lythara, the Wayward Spear → +40 Maximum Spirit" },
+
+    { "id": "ik-e1", "category": "Endgame", "text": "Finish the campaign → enter the endgame (Atlas / first Waystone map)" }
+  ]
+}

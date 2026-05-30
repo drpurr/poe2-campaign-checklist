@@ -1,0 +1,9 @@
+# Runtime data (your settings + progress)
+data/
+
+# Python / build artifacts
+__pycache__/
+*.pyc
+build/
+dist/
+*.spec

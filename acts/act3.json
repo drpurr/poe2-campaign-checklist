@@ -1,0 +1,27 @@
+{
+  "id": "act3",
+  "name": "Act 3 — Chimeral Jungle",
+  "order": 3,
+  "items": [
+    { "id": "a3-s1", "category": "Story", "text": "Reach Ziggurat Encampment (town)" },
+    { "id": "a3-s2", "category": "Story", "text": "Sandswept Marsh → Infested Barrens" },
+    { "id": "a3-s3", "category": "Story", "text": "Jungle Ruins: defeat Mighty Silverfist" },
+    { "id": "a3-s4", "category": "Story", "text": "Venom Crypts: recover the Venom Vial for Servi" },
+    { "id": "a3-s5", "category": "Story", "text": "Chimeral Wetlands → The Matlan Waterways" },
+    { "id": "a3-s6", "category": "Story", "text": "Jiquani's Machinarium: deliver the Soul Core, defeat Blackjaw, the Remnant" },
+    { "id": "a3-s7", "category": "Story", "text": "Jiquani's Sanctum → The Drowned City" },
+    { "id": "a3-s8", "category": "Story", "text": "Aggorat → Utzaal" },
+    { "id": "a3-s9", "category": "Story", "text": "The Black Chambers: defeat Doryani (Act boss)" },
+
+    { "id": "a3-asc", "category": "Ascendancy", "text": "Complete the Trial of Chaos (Ascendancy)" },
+
+    { "id": "a3-sp1", "category": "Skill Points & Bonuses", "text": "Jungle Ruins: Mighty Silverfist → +2 weapon-set skill points" },
+    { "id": "a3-sp2", "category": "Skill Points & Bonuses", "text": "The Azak Bog: defeat Ignagduk, the Bog Witch → +30 Spirit (+ guaranteed Uncut Spirit Gem)" },
+    { "id": "a3-sp3", "category": "Skill Points & Bonuses", "text": "Venom Crypts: give the Venom Vial to Servi → choose a permanent Draught (PERMANENT — cannot change!)" },
+    { "id": "a3-sp4", "category": "Skill Points & Bonuses", "text": "Jiquani's Machinarium: Blackjaw, the Remnant → +10% Fire Resistance" },
+    { "id": "a3-sp5", "category": "Skill Points & Bonuses", "text": "Aggorat / Utzaal: get a Sacrificial Heart, sacrifice at the altar → +2 weapon-set skill points" },
+
+    { "id": "a3-v1", "category": "Vendors & Rewards", "text": "The Molten Vault: defeat Mektul, the Forgemaster → unlock the Reforging Bench (Oswald)" },
+    { "id": "a3-v2", "category": "Vendors & Rewards", "text": "Sandswept Marsh: open the Orok Campfire basket → guaranteed Lesser Jeweller's Orb" }
+  ]
+}
