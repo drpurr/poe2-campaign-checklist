@@ -64,6 +64,7 @@ def main():
         settings.activateWindow()
 
     overlay.on_open_settings = open_settings
+    overlay.on_quit = app.quit
     overlay.apply_style()
     overlay.show()
 

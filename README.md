@@ -34,7 +34,8 @@ all style settings are remembered between sessions.
 2. Double-click **`run.bat`** to launch the overlay.
 
 The overlay appears in the top-right of your primary screen. Click the **⚙ gear**
-in its header (or the tray icon) to open **Settings**.
+in its header (or the tray icon) to open **Settings**. Click the **✕** in the
+header to exit the program (the tray menu's **Quit** does the same).
 
 ## Build a standalone .exe (optional)
 

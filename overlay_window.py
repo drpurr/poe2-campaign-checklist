@@ -87,6 +87,7 @@ class OverlayWindow(QWidget):
         super().__init__()
         self.state = state
         self.on_open_settings = None  # set by main.py
+        self.on_quit = None  # set by main.py
 
         self.resize_enabled = False
         self._drag_pos = None
@@ -138,10 +139,17 @@ class OverlayWindow(QWidget):
         self.gear_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.gear_btn.setToolTip("Open settings")
         self.gear_btn.clicked.connect(self._open_settings)
+        self.exit_btn = QToolButton()
+        self.exit_btn.setObjectName("ExitBtn")
+        self.exit_btn.setText("✕")  # close
+        self.exit_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.exit_btn.setToolTip("Exit")
+        self.exit_btn.clicked.connect(self._quit)
         header.addWidget(self.title_label, 1)
         header.addStretch(0)
         header.addWidget(self.progress_label)
         header.addWidget(self.gear_btn)
+        header.addWidget(self.exit_btn)
         card_layout.addLayout(header)
 
         # Scrollable checklist
@@ -264,6 +272,11 @@ class OverlayWindow(QWidget):
                 font-size: {font_size + 4}px; padding: 0 2px;
             }}
             QToolButton#GearBtn:hover {{ color: #ffffff; }}
+            QToolButton#ExitBtn {{
+                color: {color}; background: transparent; border: none;
+                font-size: {font_size + 4}px; padding: 0 2px;
+            }}
+            QToolButton#ExitBtn:hover {{ color: #ff6b6b; }}
             QCheckBox {{ background: transparent; }}
             QCheckBox::indicator {{
                 width: {indicator}px; height: {indicator}px;
@@ -438,3 +451,9 @@ class OverlayWindow(QWidget):
     def _open_settings(self):
         if self.on_open_settings:
             self.on_open_settings()
+
+    def _quit(self):
+        if self.on_quit:
+            self.on_quit()
+        else:
+            self.close()
