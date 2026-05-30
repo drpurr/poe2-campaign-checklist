@@ -1,11 +1,21 @@
 """The always-on-top checklist overlay window."""
 
 from PyQt6.QtCore import Qt, QRect, pyqtSignal
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QColor, QFont
 from PyQt6.QtWidgets import (
     QWidget, QFrame, QLabel, QCheckBox, QVBoxLayout, QHBoxLayout,
     QScrollArea, QToolButton, QSizePolicy, QApplication,
 )
+
+from google_fonts import ensure_font
+
+
+def _hex_to_rgb(value):
+    """Convert a ``#rrggbb`` color string to an (r, g, b) tuple."""
+    color = QColor(value)
+    if not color.isValid():
+        color = QColor("#121218")
+    return color.red(), color.green(), color.blue()
 
 
 class ChecklistItemWidget(QWidget):
@@ -87,6 +97,7 @@ class OverlayWindow(QWidget):
         super().__init__()
         self.state = state
         self.on_open_settings = None  # set by main.py
+        self.on_act_changed = None  # set by main.py to sync the settings window
 
         self.resize_enabled = False
         self._drag_pos = None
@@ -123,7 +134,7 @@ class OverlayWindow(QWidget):
         card_layout.setContentsMargins(14, 10, 14, 14)
         card_layout.setSpacing(8)
 
-        # Header: title + progress + settings gear
+        # Header: title + progress + next act + close + settings gear
         header = QHBoxLayout()
         self.title_label = QLabel("PoE2 Overlay")
         self.title_label.setObjectName("Title")
@@ -132,16 +143,30 @@ class OverlayWindow(QWidget):
         self.title_label.setMinimumWidth(0)
         self.progress_label = QLabel("")
         self.progress_label.setObjectName("Progress")
+        self.next_btn = QToolButton()
+        self.next_btn.setObjectName("NextBtn")
+        self.next_btn.setText("⏭")  # next act
+        self.next_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.next_btn.setToolTip("Go to next act")
+        self.next_btn.clicked.connect(self._next_act)
         self.gear_btn = QToolButton()
         self.gear_btn.setObjectName("GearBtn")
         self.gear_btn.setText("⚙")  # gear
         self.gear_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.gear_btn.setToolTip("Open settings")
         self.gear_btn.clicked.connect(self._open_settings)
+        self.close_btn = QToolButton()
+        self.close_btn.setObjectName("CloseBtn")
+        self.close_btn.setText("✕")  # close
+        self.close_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.close_btn.setToolTip("Hide overlay")
+        self.close_btn.clicked.connect(self.hide)
         header.addWidget(self.title_label, 1)
         header.addStretch(0)
         header.addWidget(self.progress_label)
+        header.addWidget(self.next_btn)
         header.addWidget(self.gear_btn)
+        header.addWidget(self.close_btn)
         card_layout.addLayout(header)
 
         # Scrollable checklist
@@ -214,6 +239,7 @@ class OverlayWindow(QWidget):
             self.item_widgets.append(row)
 
         self._update_progress_label()
+        self._update_nav()
         self.apply_style()
 
     def _on_item_toggled(self, item_id, checked):
@@ -230,16 +256,27 @@ class OverlayWindow(QWidget):
         done, total = self.state.act_completion(act["id"])
         self.progress_label.setText(f"{done}/{total}")
 
+    def _update_nav(self):
+        """Disable the 'next act' button when already on the last act."""
+        acts = self.state.acts
+        current = self.state.config.get("current_act")
+        ids = [a["id"] for a in acts]
+        has_next = bool(acts) and current in ids and ids.index(current) + 1 < len(ids)
+        self.next_btn.setEnabled(has_next)
+
     # ----- styling -------------------------------------------------------
     def apply_style(self):
         cfg = self.state.config
         scale = float(cfg.get("scale", 1.0))
         font_size = max(6, int(round(cfg.get("font_size", 14) * scale)))
-        family = cfg.get("font_family", "Segoe UI")
+        family = cfg.get("font_family", "Roboto")
+        ensure_font(family)
         color = cfg.get("font_color", "#f0e6d2")
         alpha = float(cfg.get("transparency", 0.85))
+        bg_color = cfg.get("bg_color", "#121218")
 
-        bg = f"rgba(18, 18, 24, {alpha:.3f})"
+        r, g, b = _hex_to_rgb(bg_color)
+        bg = f"rgba({r}, {g}, {b}, {alpha:.3f})"
         accent = "#5cb85c"
         indicator = max(12, int(round(16 * scale)))
         radius = max(2, int(round(3 * scale)))
@@ -264,6 +301,14 @@ class OverlayWindow(QWidget):
                 font-size: {font_size + 4}px; padding: 0 2px;
             }}
             QToolButton#GearBtn:hover {{ color: #ffffff; }}
+            QToolButton#NextBtn, QToolButton#CloseBtn {{
+                color: {color}; background: transparent; border: none;
+                font-size: {font_size + 4}px; padding: 0 2px;
+            }}
+            QToolButton#NextBtn:hover, QToolButton#CloseBtn:hover {{
+                color: #ffffff;
+            }}
+            QToolButton#NextBtn:disabled {{ color: rgba(255,255,255,0.25); }}
             QCheckBox {{ background: transparent; }}
             QCheckBox::indicator {{
                 width: {indicator}px; height: {indicator}px;
@@ -438,3 +483,10 @@ class OverlayWindow(QWidget):
     def _open_settings(self):
         if self.on_open_settings:
             self.on_open_settings()
+
+    def _next_act(self):
+        """Advance to the next act and refresh the overlay."""
+        if self.state.go_to_next_act():
+            self.rebuild_items()
+            if self.on_act_changed:
+                self.on_act_changed()

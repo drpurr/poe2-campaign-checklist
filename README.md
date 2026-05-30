@@ -12,14 +12,17 @@ all style settings are remembered between sessions.
 - **Always-on-top overlay** that floats over the game (use Windowed or Borderless mode — see note below).
 - **Per-act checklists** for Acts 1–4 and the Ogham / Vastiri / Kriar Interludes — real campaign content (bosses, ascendancy trials, skill-point quests), stored as plain JSON files you can freely edit.
 - **Check off objectives** — completed items get a strike-through; progress shows as `done/total` in the header.
+- **Progress to the next act** straight from the overlay header (⏭), or **hide the overlay** (✕) without using the tray.
 - **Remembers everything**: current act, checkmarks, overlay size/position, and style.
 - **Separate settings window** with live preview:
   - Current Act selector
-  - Transparency
+  - Transparency (drag the slider or type an exact percentage)
   - Font size
-  - Font family
-  - Font color
+  - Font family (a curated set of **Google Fonts**, downloaded and cached on first use)
+  - Font color (click the color square to pick)
+  - Background color (click the color square to pick)
   - Scale (overall UI multiplier)
+  - **Reset progress** for the current act, **Reset all progress**, or **Reset settings**
 - **Drag to move** the overlay any time; **drag the edges/corners to resize** while the settings window is open.
 - **System tray icon** for Settings, Show/Hide, Reset position, and Quit.
 
@@ -69,8 +72,8 @@ freely — the app loads every `*.json` in that folder, sorted by `order`.
   "name": "Act 1 — Ogham",            // shown in the dropdown and overlay header
   "order": 1,                          // sort position in the dropdown
   "items": [
-    { "id": "a1-01", "category": "Story", "text": "Reach Clearfell Encampment" },
-    { "id": "a1-02", "category": "Story", "text": "Defeat The Bloated Miller" }
+    { "id": "a1-01", "category": "Skill Points & Bonuses", "text": "Reach Clearfell Encampment" },
+    { "id": "a1-02", "text": "Defeat The Bloated Miller" }
   ]
 }
 ```
@@ -99,6 +102,7 @@ A `data\` folder is created next to the app:
 
 - `data\config.json` — settings, current act, and overlay geometry
 - `data\progress.json` — your checked items per act
+- `data\fonts\` — Google Font files cached after their first use
 
 Delete these to start fresh. (To reset just one act's checkmarks, use
 **Reset progress (this act)** in Settings.)
@@ -111,6 +115,7 @@ PoE2-Campaign-Overlay\
 ├─ overlay_window.py    # the always-on-top checklist overlay
 ├─ settings_window.py   # the separate settings window
 ├─ app_state.py         # config + progress + act loading/saving
+├─ google_fonts.py      # downloads & caches Google Fonts on demand
 ├─ acts\                # one JSON file per act (edit these!)
 ├─ requirements.txt
 ├─ setup.bat            # install dependencies
