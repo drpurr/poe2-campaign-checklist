@@ -3,16 +3,6 @@
   "name": "Act 2 — Vastiri Desert",
   "order": 2,
   "items": [
-    { "id": "a2-s1", "category": "Story", "text": "Reach Ardura Caravan (town)" },
-    { "id": "a2-s2", "category": "Story", "text": "Vastiri Outskirts → Mawdun Quarry / Mawdun Mine" },
-    { "id": "a2-s3", "category": "Story", "text": "Traitor's Passage: defeat Balbala, the Traitor" },
-    { "id": "a2-s4", "category": "Story", "text": "Open The Halani Gates" },
-    { "id": "a2-s5", "category": "Story", "text": "Keth → The Lost City / Buried Shrines" },
-    { "id": "a2-s6", "category": "Story", "text": "Titan Grotto: defeat Zalmarath, the Colossus" },
-    { "id": "a2-s7", "category": "Story", "text": "Deshar → The Spires of Deshar" },
-    { "id": "a2-s8", "category": "Story", "text": "The Dreadnought: defeat Jamanra, the Abomination (Act boss)" },
-    { "id": "a2-s9", "category": "Story", "text": "Travel to Act 3" },
-
     { "id": "a2-asc", "category": "Ascendancy", "text": "Find a Barya and complete the Trial of the Sekhemas (1st Ascendancy)" },
 
     { "id": "a2-sp1", "category": "Skill Points & Bonuses", "text": "Keth: defeat Kabala, Constrictor Queen → +2 weapon-set skill points" },

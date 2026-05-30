@@ -3,15 +3,6 @@
   "name": "Act 1 — Ogham",
   "order": 1,
   "items": [
-    { "id": "a1-s1", "category": "Story", "text": "The Riverbank: defeat The Bloated Miller (first boss)" },
-    { "id": "a1-s2", "category": "Story", "text": "Reach Clearfell Encampment (town)" },
-    { "id": "a1-s3", "category": "Story", "text": "Red Vale / Clearfell: defeat Beira of the Rotten Pack" },
-    { "id": "a1-s4", "category": "Story", "text": "Clear the Cemetery of the Eternals → Tomb of the Consort" },
-    { "id": "a1-s5", "category": "Story", "text": "Freythorn: cleanse the altars, defeat The King in the Mist" },
-    { "id": "a1-s6", "category": "Story", "text": "Ogham Farmlands → Ogham Village" },
-    { "id": "a1-s7", "category": "Story", "text": "Ogham Manor: defeat Count Geonor (Act boss)" },
-    { "id": "a1-s8", "category": "Story", "text": "Travel to Act 2" },
-
     { "id": "a1-sp1", "category": "Skill Points & Bonuses", "text": "Hunting Grounds: kill Crowbell → +2 weapon-set skill points" },
     { "id": "a1-sp2", "category": "Skill Points & Bonuses", "text": "Ogham Farmlands: find Una's Lute, return it to Una → +2 weapon-set skill points" },
     { "id": "a1-sp3", "category": "Skill Points & Bonuses", "text": "Freythorn: King in the Mist → +30 Spirit (+ guaranteed Uncut Spirit Gem)" },
