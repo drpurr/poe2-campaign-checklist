@@ -321,8 +321,8 @@ class OverlayWindow(QWidget):
         if self.resize_enabled:
             border = "2px dashed #6ca0ff"
         elif border_enabled:
-            br, bg_, bb = _hex_to_rgb(border_color)
-            border = f"1px solid rgba({br}, {bg_}, {bb}, {min(1.0, alpha + 0.15):.3f})"
+            br, bgc, bb = _hex_to_rgb(border_color)
+            border = f"1px solid rgba({br}, {bgc}, {bb}, {min(1.0, alpha + 0.15):.3f})"
         else:
             border = "none"
 
