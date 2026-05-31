@@ -268,7 +268,7 @@ class OverlayWindow(QWidget):
                 last_category = category
 
             row = ChecklistItemWidget(
-                item["text"], self.state.is_done(act["id"], item["id"])
+                self.state.item_text(item), self.state.is_done(act["id"], item["id"])
             )
             row.toggled.connect(
                 lambda checked, iid=item["id"]: self._on_item_toggled(iid, checked)

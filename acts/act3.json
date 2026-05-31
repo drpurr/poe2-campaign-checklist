@@ -5,7 +5,17 @@
   "items": [
     { "id": "a3-sp1", "category": "Skill Points & Bonuses", "text": "Jungle Ruins: Mighty Silverfist → +2 weapon-set skill points" },
     { "id": "a3-sp2", "category": "Skill Points & Bonuses", "text": "The Azak Bog: defeat Ignagduk, the Bog Witch → +30 Spirit (+ guaranteed Uncut Spirit Gem)" },
-    { "id": "a3-sp3", "category": "Skill Points & Bonuses", "text": "Venom Crypts: give the Venom Vial to Servi → choose a permanent Draught (PERMANENT — cannot change!)" },
+    {
+      "id": "a3-sp3",
+      "category": "Skill Points & Bonuses",
+      "text": "Venom Crypts: give the Venom Vial to Servi → Choose $VAR (PERMANENT — cannot change!)",
+      "choice_label": "Act 3 — Servi's Draught",
+      "choices": [
+        "+25% increased Stun Threshold",
+        "+30% increased Elemental Ailment Threshold",
+        "+25% increased Mana Regeneration Rate"
+      ]
+    },
     { "id": "a3-sp4", "category": "Skill Points & Bonuses", "text": "Jiquani's Machinarium: Blackjaw, the Remnant → +10% Fire Resistance" },
     { "id": "a3-sp5", "category": "Skill Points & Bonuses", "text": "Aggorat / Utzaal: get a Sacrificial Heart, sacrifice at the altar → +2 weapon-set skill points" },
 
