@@ -310,6 +310,8 @@ class OverlayWindow(QWidget):
         color = cfg.get("font_color", "#f0e6d2")
         alpha = float(cfg.get("transparency", 0.85))
         bg_color = cfg.get("bg_color", "#121218")
+        border_color = cfg.get("border_color", "#7882a0")
+        border_enabled = bool(cfg.get("border_enabled", True))
 
         r, g, b = _hex_to_rgb(bg_color)
         bg = f"rgba({r}, {g}, {b}, {alpha:.3f})"
@@ -318,8 +320,11 @@ class OverlayWindow(QWidget):
         radius = max(2, int(round(3 * scale)))
         if self.resize_enabled:
             border = "2px dashed #6ca0ff"
+        elif border_enabled:
+            br, bgc, bb = _hex_to_rgb(border_color)
+            border = f"1px solid rgba({br}, {bgc}, {bb}, {min(1.0, alpha + 0.15):.3f})"
         else:
-            border = f"1px solid rgba(120, 130, 160, {min(1.0, alpha + 0.15):.3f})"
+            border = "none"
 
         self.card.setStyleSheet(f"""
             #Card {{

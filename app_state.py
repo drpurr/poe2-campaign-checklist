@@ -29,6 +29,8 @@ DEFAULT_CONFIG = {
     "font_family": "Roboto",     # a Google Font family
     "font_color": "#f0e6d2",     # PoE-ish parchment color
     "bg_color": "#121218",       # overlay panel background color
+    "border_color": "#7882a0",   # overlay panel border color
+    "border_enabled": True,      # whether to draw the panel border
     "scale": 1.0,                # global UI scale multiplier, 0.5 - 3.0
     "overlay_geometry": None,    # [x, y, w, h]
 }
