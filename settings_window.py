@@ -45,7 +45,7 @@ class SettingsWindow(QWidget):
         self._bg_color = state.config.get("bg_color", "#121218")
         self._border_color = state.config.get("border_color", "#7882a0")
 
-        self.setWindowTitle("PoE2 Campaign Overlay — Settings")
+        self.setWindowTitle("Settings")
         self.setMinimumWidth(400)
         self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
 
@@ -92,7 +92,7 @@ class SettingsWindow(QWidget):
         colors_row = QHBoxLayout()
         colors_row.setSpacing(14)
         colors_row.addLayout(self._labeled_swatch("Text", self.color_swatch))
-        colors_row.addLayout(self._labeled_swatch("Header", self.accent_swatch))
+        colors_row.addLayout(self._labeled_swatch("Accent", self.accent_swatch))
         colors_row.addLayout(self._labeled_swatch("BG", self.bg_swatch))
         colors_row.addLayout(self._labeled_swatch("Border", self.border_swatch))
         colors_row.addStretch(1)
@@ -273,7 +273,7 @@ class SettingsWindow(QWidget):
 
     def _pick_accent_color(self):
         chosen = QColorDialog.getColor(
-            QColor(self._accent_color), self, "Choose green (accent) color"
+            QColor(self._accent_color), self, "Choose (accent) color"
         )
         if chosen.isValid():
             self._accent_color = chosen.name()
@@ -354,7 +354,7 @@ class SettingsWindow(QWidget):
         if not act:
             return
         answer = QMessageBox.question(
-            self, "Reset progress",
+            self, "Clear current act",
             f'Clear all checkmarks for "{act["name"]}"?',
         )
         if answer == QMessageBox.StandardButton.Yes:
@@ -363,7 +363,7 @@ class SettingsWindow(QWidget):
 
     def _reset_all_progress(self):
         answer = QMessageBox.question(
-            self, "Reset all progress",
+            self, "Clear all acts",
             "Clear all checkmarks for every act?",
         )
         if answer == QMessageBox.StandardButton.Yes:

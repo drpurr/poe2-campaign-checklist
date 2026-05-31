@@ -8,7 +8,7 @@
     { "id": "a4-sp3", "category": "Skill Points & Bonuses", "text": "Halls of The Dead - 3 Trials → Choose: $VAR", 
 	"choice_label": "Act 4 — Hall of the Dead Trials", 
 	"choices": [
-		"+5% Elemental Resistance",
+		"+5% Lightning, Fire & Ice Resistance",
 		"+5 All Attributes"
 	] },
     { "id": "a4-sp4", "category": "Skill Points & Bonuses", "text": "Trial Of The Ancestors - Kill Yama The White and speak to Hinekora → +2 passive skill points" },
