@@ -3,8 +3,8 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QFont
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QComboBox, QSlider,
-    QSpinBox, QPushButton, QLabel, QFrame, QGroupBox, QSizePolicy,
+    QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QGridLayout, QComboBox,
+    QSlider, QSpinBox, QPushButton, QLabel, QFrame, QGroupBox, QSizePolicy,
     QColorDialog, QMessageBox, QCheckBox,
 )
 
@@ -54,14 +54,25 @@ class SettingsWindow(QWidget):
         root.setSpacing(10)
 
         # ----- Appearance group ---------------------------------------------
+        # A 3-column grid keeps everything aligned: a fixed right-aligned label
+        # column, a stretching control column (combo / slider / swatches), and a
+        # right-aligned numeric column so the three spin boxes line up exactly.
         appearance = QGroupBox("Appearance")
-        form = QFormLayout(appearance)
-        form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
-        form.setSpacing(8)
-        form.setContentsMargins(12, 8, 12, 12)
+        grid = QGridLayout(appearance)
+        grid.setContentsMargins(12, 8, 10, 12)
+        grid.setHorizontalSpacing(8)
+        grid.setVerticalSpacing(8)
+        grid.setColumnStretch(1, 1)            # control column absorbs slack
+        grid.setColumnMinimumWidth(2, 72)      # numeric column (spin boxes)
 
-        # Font family + size share one row so the size box fills the space that
-        # would otherwise sit empty to the right of the family dropdown.
+        def _row_label(text):
+            lbl = QLabel(text)
+            lbl.setAlignment(
+                Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+            )
+            return lbl
+
+        # Row 0 — Font family (control col) + size (numeric col).
         self.font_combo = QComboBox()
         self.font_combo.addItems(GOOGLE_FONTS)
         self._make_combo_compact(self.font_combo)
@@ -69,53 +80,57 @@ class SettingsWindow(QWidget):
         self.font_size = QSpinBox()
         self.font_size.setRange(8, 40)
         self.font_size.setSuffix(" pt")
+        self.font_size.setFixedWidth(72)
         self.font_size.valueChanged.connect(self._on_style_changed)
-        font_row = QHBoxLayout()
-        font_row.addWidget(self.font_combo, 1)
-        font_row.addWidget(QLabel("Size:"))
-        font_row.addWidget(self.font_size)
-        form.addRow("Font:", self._wrap(font_row))
+        grid.addWidget(_row_label("Font:"), 0, 0)
+        grid.addWidget(self.font_combo, 0, 1)
+        grid.addWidget(self.font_size, 0, 2)
 
-        # Colors (compact labelled swatches) + transparency share one row.
+        # Row 1 — Colors: four labelled swatches packed left in the control col.
         self.color_swatch = ClickableSwatch(self._pick_color)
         self.accent_swatch = ClickableSwatch(self._pick_accent_color)
         self.bg_swatch = ClickableSwatch(self._pick_bg_color)
         self.border_swatch = ClickableSwatch(self._pick_border_color)
-        self.trans_slider = QSlider(Qt.Orientation.Horizontal)
-        self.trans_slider.setRange(0, 100)
-        self.trans_slider.setMinimumWidth(70)
-        self.trans_slider.valueChanged.connect(self._on_trans_slider)
-        self.trans_spin = QSpinBox()
-        self.trans_spin.setRange(0, 100)
-        self.trans_spin.setSuffix(" %")
-        self.trans_spin.setFixedWidth(64)
-        self.trans_spin.valueChanged.connect(self._on_trans_spin)
         colors_row = QHBoxLayout()
-        colors_row.setSpacing(10)
+        colors_row.setSpacing(12)
         colors_row.addLayout(self._labeled_swatch("Text", self.color_swatch))
         colors_row.addLayout(self._labeled_swatch("Accent", self.accent_swatch))
         colors_row.addLayout(self._labeled_swatch("BG", self.bg_swatch))
         colors_row.addLayout(self._labeled_swatch("Border", self.border_swatch))
-        form.addRow("Colors:", self._wrap(colors_row))
+        colors_row.addStretch(1)
+        grid.addWidget(_row_label("Colors:"), 1, 0)
+        grid.addLayout(colors_row, 1, 1, 1, 2)
 
-        opacity_row = QHBoxLayout()
-        opacity_row.addWidget(self.trans_slider, 1)
-        opacity_row.addWidget(self.trans_spin)
-        form.addRow("Opacity:", self._wrap(opacity_row))
+        # Row 2 — Opacity slider (control col) + percentage (numeric col).
+        self.trans_slider = QSlider(Qt.Orientation.Horizontal)
+        self.trans_slider.setRange(0, 100)
+        self.trans_slider.valueChanged.connect(self._on_trans_slider)
+        self.trans_spin = QSpinBox()
+        self.trans_spin.setRange(0, 100)
+        self.trans_spin.setSuffix(" %")
+        self.trans_spin.setFixedWidth(72)
+        self.trans_spin.valueChanged.connect(self._on_trans_spin)
+        grid.addWidget(_row_label("Opacity:"), 2, 0)
+        grid.addWidget(self.trans_slider, 2, 1)
+        grid.addWidget(self.trans_spin, 2, 2)
 
-        # Border toggle + icon size share one row.
+        # Row 3 — Show border checkbox (left) with the icon-size label hugging
+        # its spin box on the right, so "Icon size:" reads against the spin and
+        # not the checkbox while the spin still aligns to the numeric column.
         self.border_checkbox = QCheckBox("Show border")
         self.border_checkbox.toggled.connect(self._on_border_toggled)
         self.control_size = QSpinBox()
         self.control_size.setRange(8, 40)
         self.control_size.setSuffix(" pt")
+        self.control_size.setFixedWidth(72)
         self.control_size.valueChanged.connect(self._on_style_changed)
         border_row = QHBoxLayout()
+        border_row.setSpacing(8)
         border_row.addWidget(self.border_checkbox)
         border_row.addStretch(1)
-        border_row.addWidget(QLabel("Icon size:"))
-        border_row.addWidget(self.control_size)
-        form.addRow("", self._wrap(border_row))
+        border_row.addWidget(_row_label("Icon size:"))
+        grid.addLayout(border_row, 3, 0, 1, 2)
+        grid.addWidget(self.control_size, 3, 2)
 
         root.addWidget(appearance)
 
