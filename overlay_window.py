@@ -92,6 +92,14 @@ class OverlayWindow(QWidget):
 
     RESIZE_MARGIN = 8
     MIN_W, MIN_H = 220, 160
+    # The overlay uses a translucent top-level window, so fully transparent
+    # pixels (alpha 0) are click-through on Windows: mouse events pass straight
+    # to whatever is behind them. At a transparency setting of 0% the panel
+    # background would be completely transparent, making the overlay impossible
+    # to drag and its checkboxes nearly impossible to click. Painting the panel
+    # with a tiny minimum alpha keeps it hit-testable while staying visually
+    # see-through.
+    MIN_PANEL_ALPHA = 0.04
 
     def __init__(self, state):
         super().__init__()
@@ -336,7 +344,11 @@ class OverlayWindow(QWidget):
         border_enabled = bool(cfg.get("border_enabled", True))
 
         r, g, b = _hex_to_rgb(bg_color)
-        bg = f"rgba({r}, {g}, {b}, {alpha:.3f})"
+        # Keep the panel itself slightly opaque even at 0% so it still captures
+        # mouse clicks (see MIN_PANEL_ALPHA); a fully transparent panel is
+        # click-through and can't be dragged or have its checkboxes clicked.
+        panel_alpha = max(alpha, self.MIN_PANEL_ALPHA)
+        bg = f"rgba({r}, {g}, {b}, {panel_alpha:.3f})"
         accent = cfg.get("accent_color", "#5cb85c")
         indicator = 16
         radius = 3
