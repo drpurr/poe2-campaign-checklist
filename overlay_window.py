@@ -1,7 +1,5 @@
 """The always-on-top checklist overlay window."""
 
-import re
-
 from PyQt6.QtCore import Qt, QRect, pyqtSignal
 from PyQt6.QtGui import QColor, QFont
 from PyQt6.QtWidgets import (
@@ -150,7 +148,7 @@ class OverlayWindow(QWidget):
         )
         self.act_combo.setMinimumWidth(0)
         for act in self.state.acts:
-            self.act_combo.addItem(self._format_act_label(act.get("name", "Act")), act["id"])
+            self.act_combo.addItem(act.get("name", "Act"), act["id"])
         self.act_combo.currentIndexChanged.connect(self._on_combo_changed)
         self.progress_label = QLabel("")
         self.progress_label.setObjectName("Progress")
@@ -294,14 +292,6 @@ class OverlayWindow(QWidget):
             return
         done, total = self.state.act_completion(act["id"])
         self.progress_label.setText(f"{done}/{total}")
-
-    @staticmethod
-    def _format_act_label(name):
-        """Drop the separating dash from an act name for the dropdown menu."""
-        # Covers figure dash (U+2012), en dash (U+2013), em dash (U+2014),
-        # horizontal bar (U+2015) and the ASCII hyphen-minus.
-        cleaned = re.sub(r"\s*[\u2012\u2013\u2014\u2015-]\s*", " ", name)
-        return cleaned.strip()
 
     def _sync_combo_selection(self):
         """Select the current act in the combo without re-triggering changes."""
