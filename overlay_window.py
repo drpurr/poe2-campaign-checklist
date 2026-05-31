@@ -401,7 +401,7 @@ class OverlayWindow(QWidget):
             QToolButton#PrevBtn:disabled, QToolButton#NextBtn:disabled {{
                 color: rgba(255,255,255,0.25);
             }}
-            QCheckBox {{ background: transparent; }}
+            QCheckBox {{ background: transparent; spacing: 0px; }}
             QCheckBox::indicator {{
                 width: {indicator}px; height: {indicator}px;
                 border: 2px solid {color};
