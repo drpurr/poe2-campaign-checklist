@@ -270,6 +270,12 @@ class OverlayWindow(QWidget):
         if act:
             self.state.set_done(act["id"], item_id, checked)
             self._update_progress_label()
+            # When every item in the act is checked off, automatically
+            # advance to the next act.
+            if checked:
+                done, total = self.state.act_completion(act["id"])
+                if total > 0 and done == total:
+                    self._next_act()
 
     def _update_progress_label(self):
         act = self.state.current_act
