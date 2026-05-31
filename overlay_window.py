@@ -298,6 +298,8 @@ class OverlayWindow(QWidget):
     @staticmethod
     def _format_act_label(name):
         """Drop the separating dash from an act name for the dropdown menu."""
+        # Covers figure dash (U+2012), en dash (U+2013), em dash (U+2014),
+        # horizontal bar (U+2015) and the ASCII hyphen-minus.
         cleaned = re.sub(r"\s*[\u2012\u2013\u2014\u2015-]\s*", " ", name)
         return cleaned.strip()
 
