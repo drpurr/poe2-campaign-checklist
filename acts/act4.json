@@ -1,0 +1,30 @@
+{
+  "id": "act4",
+  "name": "Act 4",
+  "order": 4,
+  "items": [
+    { "id": "a4-sp1", "category": "Skill Points & Bonuses", "text": "Journey's End: The Blind Beast → +2 passive skill points" },
+    { "id": "a4-sp2", "category": "Skill Points & Bonuses", "text": "Eye of Hinekora - Pay Respects at Silent Hall → +%5 Max Mana"},
+    { "id": "a4-sp3", "category": "Skill Points & Bonuses", "text": "Halls of The Dead - 3 Trials → Choose: $VAR", 
+	"choice_label": "Act 4 — Hall of the Dead Trials", 
+	"choices": [
+		"+5% Elemental Resistance",
+		"+5 All Attributes"
+	] },
+    { "id": "a4-sp4", "category": "Skill Points & Bonuses", "text": "Trial Of The Ancestors - Kill Yama The White and speak to Hinekora → +2 passive skill points" },
+    { "id": "a4-sp5", "category": "Skill Points & Bonuses", "text": "Abandoned Prison - Find Goddess of Justice statue → Choose: $VAR",
+	"choice_label": "Act 4 — Abandoned Prison", 
+	"choices": [
+		"+30% Increased Mana recovery from Flasks",
+		"+30% Increased Life recovery from Flasks"
+	] },
+    { "id": "a4-sp6", "category": "Skill Points & Bonuses", "text": "Whakapanu Island - Kill the Great White One → Choose: $VAR", 
+	"choice_label": "Act 4 — Whakapanu Island", 
+	"choices": [
+		"30% increased Armour, Evasion, and Energy shield",
+		"15% of Armour Also Applies To Elemental Damage, Gain Deflection Rating Equal To 12% Of Evasion Rating, 12% Faster Start Of Energy Shield Recharge"
+	] },
+    { "id": "a4-v1", "category": "Misc", "text": "Beast Pen: claim the Level 12 Uncut Skill Gem" },
+    { "id": "a4-v2", "category": "Misc", "text": "Heart of the Tribe: clear the Meeting House bonus objective for free loot" }
+  ]
+}

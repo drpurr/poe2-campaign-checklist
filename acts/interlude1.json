@@ -1,7 +1,7 @@
 {
   "id": "interlude_ogham",
-  "name": "Interlude — Ogham",
-  "order": 4,
+  "name": "Interlude 1 — Ogham",
+  "order": 5,
   "items": [
     { "id": "io-sp1", "category": "Skill Points & Bonuses", "text": "Wolvenhold: Oswin, the Dread Warden → +2 passive skill points" }
   ]

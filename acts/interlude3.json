@@ -1,7 +1,7 @@
 {
   "id": "interlude_kriar",
-  "name": "Interlude — Kriar (post Act 4)",
-  "order": 7,
+  "name": "Interlude — Kriar",
+  "order": 6,
   "items": [
     { "id": "ik-sp1", "category": "Skill Points & Bonuses", "text": "Kriar Village: Lythara, the Wayward Spear → +40 Maximum Spirit" },
 
