@@ -387,7 +387,7 @@ class OverlayWindow(QWidget):
             QToolButton#GearBtn:hover {{ color: #ffffff; }}
             QToolButton#LockBtn {{
                 color: {color}; background: transparent; border: none;
-                font-size: {font_size}px; padding: 0 2px;
+                font-size: {control_size}px; padding: 0 2px;
             }}
             QToolButton#LockBtn:hover {{ color: #ffffff; }}
             QToolButton#PrevBtn, QToolButton#NextBtn, QToolButton#ExitBtn {{
