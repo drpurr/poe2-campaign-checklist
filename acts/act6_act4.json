@@ -3,8 +3,6 @@
   "name": "Act 4 — The Third Edict",
   "order": 6,
   "items": [
-    { "id": "a4-asc", "category": "Ascendancy", "text": "Complete the Trail of the Ancestors, speak to Hinekora → +2 weapon-set skill points" },
-
     { "id": "a4-sp1", "category": "Skill Points & Bonuses", "text": "Isle of Kin: The Blind Beast → +2 weapon-set skill points" },
     { "id": "a4-sp2", "category": "Skill Points & Bonuses", "text": "Yama the White drops a Silver Coin → take it to the Trail of the Ancestors → +2 passive skill points" },
 

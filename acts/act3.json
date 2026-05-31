@@ -3,8 +3,6 @@
   "name": "Act 3 — Chimeral Jungle",
   "order": 3,
   "items": [
-    { "id": "a3-asc", "category": "Ascendancy", "text": "Complete the Trial of Chaos (Ascendancy)" },
-
     { "id": "a3-sp1", "category": "Skill Points & Bonuses", "text": "Jungle Ruins: Mighty Silverfist → +2 weapon-set skill points" },
     { "id": "a3-sp2", "category": "Skill Points & Bonuses", "text": "The Azak Bog: defeat Ignagduk, the Bog Witch → +30 Spirit (+ guaranteed Uncut Spirit Gem)" },
     { "id": "a3-sp3", "category": "Skill Points & Bonuses", "text": "Venom Crypts: give the Venom Vial to Servi → choose a permanent Draught (PERMANENT — cannot change!)" },
