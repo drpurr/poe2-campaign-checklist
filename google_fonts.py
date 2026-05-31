@@ -44,18 +44,23 @@ GOOGLE_FONTS = [
 
 FONTS_DIR = DATA_DIR / "fonts"
 
-# Qt 6's font database can load TrueType (.ttf), OpenType (.otf) and Web Open
-# Font Format (.woff/.woff2) files directly, so we let the Google Fonts CSS API
-# serve whatever modern format it prefers (normally compact WOFF2). A modern
-# User-Agent is required: older agents make the API return formats we then have
-# to special-case, and an agent that supports WOFF (e.g. Firefox 6) makes the
-# API serve .woff URLs that a .ttf-only matcher would miss entirely.
-_USER_AGENT = (
+# The Google Fonts v1 CSS API serves a different font *format* depending on the
+# requesting browser's User-Agent, and Qt's loader is picky about which it
+# accepts: QFontDatabase.addApplicationFont rejects WOFF2 on the PyQt6 wheels
+# (their bundled FreeType is built without WOFF2/brotli support) but always
+# loads plain TrueType. So we send urllib's default agent first, which the API
+# treats as an unknown browser and answers with .ttf; the modern Chrome agent
+# (compact WOFF2) is kept only as a defensive fallback. Each candidate is
+# verified with addApplicationFont, so correctness never depends on a particular
+# agent or format -- we just keep the first download Qt can actually register.
+# ``None`` means "send urllib's default User-Agent".
+_USER_AGENTS = (
+    None,
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
 )
 
-# Font file URL inside the CSS, in any format Qt can load. We prefer the first
+# Font file URL inside the CSS, in any format Qt can load. We take the first
 # match the API returns for the requested family.
 _FONT_URL_RE = re.compile(r"url\((https://[^)]+\.(?:woff2|woff|ttf|otf))\)")
 
@@ -71,18 +76,21 @@ def _cache_path(family):
     return FONTS_DIR / f"{safe}.font"
 
 
-def _download_font(family, dest):
+def _download_font(family, dest, user_agent):
     """Fetch a font file for ``family`` from Google Fonts into ``dest``.
 
-    Accepts any web font format Qt can load (WOFF2/WOFF/TTF/OTF). Qt identifies
-    fonts by their file contents, so the on-disk extension does not matter.
+    ``user_agent`` selects the format the CSS API serves (``None`` sends
+    urllib's default agent and gets TTF; a modern agent gets WOFF2). Qt
+    identifies fonts by their file contents, so the on-disk extension does not
+    matter. Raises on a network/parse failure or an empty download.
     """
     # The CSS API expects spaces in family names encoded as ``+`` (e.g.
     # ``Open+Sans``); ``%20`` is rejected for multi-word families.
     css_url = "https://fonts.googleapis.com/css?family=" + urllib.parse.quote_plus(
         family
     )
-    request = urllib.request.Request(css_url, headers={"User-Agent": _USER_AGENT})
+    headers = {"User-Agent": user_agent} if user_agent else {}
+    request = urllib.request.Request(css_url, headers=headers)
     with urllib.request.urlopen(request, timeout=15) as response:
         css = response.read().decode("utf-8", "replace")
     match = _FONT_URL_RE.search(css)
@@ -97,13 +105,27 @@ def _download_font(family, dest):
     dest.write_bytes(data)
 
 
+def _register(path):
+    """Register the font file at ``path`` with Qt's application font database.
+
+    Returns the family name Qt stored it under (which can differ from the Google
+    Fonts name, e.g. "Roboto Condensed"), or ``None`` if Qt could not load the
+    file -- for example a WOFF2 on a build whose FreeType lacks WOFF2 support.
+    """
+    font_id = QFontDatabase.addApplicationFont(str(path))
+    if font_id == -1:
+        return None
+    families = QFontDatabase.applicationFontFamilies(font_id)
+    return families[0] if families else None
+
+
 def ensure_font(family):
     """Make ``family`` available to Qt, downloading + caching it if needed.
 
     Returns the family name to use when constructing a ``QFont`` (which may
     differ from ``family`` for downloaded fonts), or ``None`` if the font could
-    not be made available. The returned name is what Qt actually registered, so
-    building ``QFont`` with it avoids a silent fallback to a default family.
+    not be made available. The returned name is one Qt has actually registered,
+    so building a ``QFont`` with it won't silently fall back to a default family.
     """
     if not family:
         return None
@@ -115,23 +137,28 @@ def ensure_font(family):
         return family
 
     cache = _cache_path(family)
-    try:
-        if not cache.exists():
-            _download_font(family, cache)
-        font_id = QFontDatabase.addApplicationFont(str(cache))
-        if font_id == -1:
-            # A previously cached file that Qt can't parse (e.g. a truncated or
-            # otherwise corrupt download) would block this family forever, since
-            # the existence check above skips re-downloading. Drop it and try a
-            # fresh download once.
+    # Trust an existing cache only if Qt can actually load it. A cache written by
+    # an older build may hold a WOFF2 this Qt rejects, so fall through to a fresh
+    # download (in a loadable format) when the cached file doesn't take.
+    resolved = _register(cache) if cache.exists() else None
+    if resolved is None:
+        for user_agent in _USER_AGENTS:
+            try:
+                _download_font(family, cache, user_agent)
+            except Exception as exc:  # noqa: BLE001 - best effort; try next agent
+                print(f"[fonts] Could not download '{family}': {exc}",
+                      file=sys.stderr)
+                continue
+            resolved = _register(cache)
+            if resolved is not None:
+                break
+            # Qt rejected this format (e.g. WOFF2); discard it so the existence
+            # check above won't pin us to it, then try the next agent/format.
             cache.unlink(missing_ok=True)
-            _download_font(family, cache)
-            font_id = QFontDatabase.addApplicationFont(str(cache))
-        if font_id != -1:
-            registered = QFontDatabase.applicationFontFamilies(font_id)
-            resolved = registered[0] if registered else family
-            _loaded[family] = resolved
-            return resolved
-    except Exception as exc:  # noqa: BLE001 - best effort; fall back silently
-        print(f"[fonts] Could not load '{family}': {exc}", file=sys.stderr)
+
+    if resolved is not None:
+        _loaded[family] = resolved
+        return resolved
+    print(f"[fonts] Qt could not load any available format for '{family}'",
+          file=sys.stderr)
     return None
