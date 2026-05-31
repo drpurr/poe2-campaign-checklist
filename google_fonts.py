@@ -2,7 +2,8 @@
 
 Provides a curated list of popular Google Font families and lazily downloads
 the font files on demand, registering them with Qt's font database so they can
-be rendered. Downloaded fonts are cached next to the app (``data/fonts``) so a
+be rendered. Downloaded fonts are cached in the per-user app-data folder
+(``poe2-campaign-tracker/fonts``) so a
 font is only fetched once. Everything degrades gracefully: if a font can't be
 downloaded (e.g. no internet), Qt simply falls back to a default family.
 """
