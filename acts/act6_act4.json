@@ -8,7 +8,7 @@
     { "id": "a4-sp1", "category": "Skill Points & Bonuses", "text": "Isle of Kin: The Blind Beast → +2 weapon-set skill points" },
     { "id": "a4-sp2", "category": "Skill Points & Bonuses", "text": "Yama the White drops a Silver Coin → take it to the Trail of the Ancestors → +2 passive skill points" },
 
-    { "id": "a4-v1", "category": "Vendors & Rewards", "text": "Beast Pen: claim the Level 12 Uncut Skill Gem" },
-    { "id": "a4-v2", "category": "Vendors & Rewards", "text": "Heart of the Tribe: clear the Meeting House bonus objective for free loot" }
+    { "id": "a4-v1", "category": "Misc", "text": "Beast Pen: claim the Level 12 Uncut Skill Gem" },
+    { "id": "a4-v2", "category": "Misc", "text": "Heart of the Tribe: clear the Meeting House bonus objective for free loot" }
   ]
 }
