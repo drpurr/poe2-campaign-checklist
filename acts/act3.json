@@ -10,6 +10,7 @@
       "category": "Skill Points & Bonuses",
       "text": "Venom Crypts: give the Venom Vial to Servi → Choose $VAR",
       "choice_label": "Act 3 — Servi's Draught",
+      "icon": "axes",
       "choices": [
         "+25% increased Stun Threshold",
         "+30% increased Elemental Ailment Threshold",

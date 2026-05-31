@@ -16,6 +16,7 @@ from PyQt6.QtWidgets import QApplication, QMenu, QMessageBox, QSystemTrayIcon
 from app_state import AppState
 from overlay_window import OverlayWindow
 from settings_window import SettingsWindow
+from theme import CAT, POPUP_QSS
 
 
 def make_icon():
@@ -24,10 +25,10 @@ def make_icon():
     pixmap.fill(Qt.GlobalColor.transparent)
     painter = QPainter(pixmap)
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-    painter.setBrush(QBrush(QColor("#1b1b24")))
-    painter.setPen(QPen(QColor("#5cb85c"), 4))
+    painter.setBrush(QBrush(QColor(CAT["base"])))
+    painter.setPen(QPen(QColor(CAT["accent"]), 4))
     painter.drawRoundedRect(6, 6, 52, 52, 12, 12)
-    pen = QPen(QColor("#5cb85c"), 7)
+    pen = QPen(QColor(CAT["accent"]), 7)
     pen.setCapStyle(Qt.PenCapStyle.RoundCap)
     pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
     painter.setPen(pen)
@@ -41,6 +42,11 @@ def main():
     app.setApplicationName("PoE2 Campaign Overlay")
     # Closing the settings window should not quit the app — the tray icon does.
     app.setQuitOnLastWindowClosed(False)
+
+    # Catppuccin Mocha app-wide. The two main windows fully style themselves;
+    # this only themes the incidental popups (confirmation dialogs, the tray
+    # menu, tooltips) so the whole app matches without an external theme package.
+    app.setStyleSheet(POPUP_QSS)
 
     state = AppState()
     if not state.acts:
