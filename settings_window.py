@@ -41,6 +41,7 @@ class SettingsWindow(QWidget):
         # are ignored until _load_from_config has populated everything.
         self._loading = True
         self._color = state.config.get("font_color", "#f0e6d2")
+        self._accent_color = state.config.get("accent_color", "#5cb85c")
         self._bg_color = state.config.get("bg_color", "#121218")
         self._border_color = state.config.get("border_color", "#7882a0")
 
@@ -82,26 +83,20 @@ class SettingsWindow(QWidget):
         self.font_combo.currentIndexChanged.connect(self._on_font_changed)
         form.addRow("Font family:", self.font_combo)
 
-        # Font color — click the swatch to open the picker
+        # Colors — grouped into one compact row of labelled swatches so they
+        # don't each consume a full form row of vertical space.
         self.color_swatch = ClickableSwatch(self._pick_color)
-        color_row = QHBoxLayout()
-        color_row.addWidget(self.color_swatch)
-        color_row.addStretch(1)
-        form.addRow("Font color:", self._wrap(color_row))
-
-        # Background color — click the swatch to open the picker
+        self.accent_swatch = ClickableSwatch(self._pick_accent_color)
         self.bg_swatch = ClickableSwatch(self._pick_bg_color)
-        bg_row = QHBoxLayout()
-        bg_row.addWidget(self.bg_swatch)
-        bg_row.addStretch(1)
-        form.addRow("Background color:", self._wrap(bg_row))
-
-        # Border color — click the swatch to open the picker
         self.border_swatch = ClickableSwatch(self._pick_border_color)
-        border_row = QHBoxLayout()
-        border_row.addWidget(self.border_swatch)
-        border_row.addStretch(1)
-        form.addRow("Border color:", self._wrap(border_row))
+        colors_row = QHBoxLayout()
+        colors_row.setSpacing(14)
+        colors_row.addLayout(self._labeled_swatch("Text", self.color_swatch))
+        colors_row.addLayout(self._labeled_swatch("Green", self.accent_swatch))
+        colors_row.addLayout(self._labeled_swatch("Background", self.bg_swatch))
+        colors_row.addLayout(self._labeled_swatch("Border", self.border_swatch))
+        colors_row.addStretch(1)
+        form.addRow("Colors:", self._wrap(colors_row))
 
         # Border toggle
         self.border_checkbox = QCheckBox("Show border")
@@ -151,6 +146,17 @@ class SettingsWindow(QWidget):
         widget.setLayout(layout)
         return widget
 
+    def _labeled_swatch(self, text, swatch):
+        """Return a small vertical column: a caption above its color swatch."""
+        column = QVBoxLayout()
+        column.setSpacing(3)
+        caption = QLabel(text)
+        caption.setStyleSheet("color: #888;")
+        caption.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        column.addWidget(caption, 0, Qt.AlignmentFlag.AlignHCenter)
+        column.addWidget(swatch, 0, Qt.AlignmentFlag.AlignHCenter)
+        return column
+
     def _load_from_config(self):
         self._loading = True
         cfg = self.state.config
@@ -161,10 +167,12 @@ class SettingsWindow(QWidget):
         self._select_font(cfg.get("font_family", "Roboto"))
         self.control_size.setValue(int(cfg.get("control_size", 20)))
         self._color = cfg.get("font_color", "#f0e6d2")
+        self._accent_color = cfg.get("accent_color", "#5cb85c")
         self._bg_color = cfg.get("bg_color", "#121218")
         self._border_color = cfg.get("border_color", "#7882a0")
         self.border_checkbox.setChecked(bool(cfg.get("border_enabled", True)))
         self._update_swatch()
+        self._update_accent_swatch()
         self._update_bg_swatch()
         self._update_border_swatch()
         self._loading = False
@@ -193,6 +201,12 @@ class SettingsWindow(QWidget):
             f"border: 1px solid #555; border-radius: 4px; }}"
         )
 
+    def _update_accent_swatch(self):
+        self.accent_swatch.setStyleSheet(
+            f"#Swatch {{ background: {self._accent_color}; "
+            f"border: 1px solid #555; border-radius: 4px; }}"
+        )
+
     def _update_bg_swatch(self):
         self.bg_swatch.setStyleSheet(
             f"#Swatch {{ background: {self._bg_color}; "
@@ -213,6 +227,15 @@ class SettingsWindow(QWidget):
         if chosen.isValid():
             self._color = chosen.name()
             self._update_swatch()
+            self._on_style_changed()
+
+    def _pick_accent_color(self):
+        chosen = QColorDialog.getColor(
+            QColor(self._accent_color), self, "Choose green (accent) color"
+        )
+        if chosen.isValid():
+            self._accent_color = chosen.name()
+            self._update_accent_swatch()
             self._on_style_changed()
 
     def _pick_bg_color(self):
@@ -269,6 +292,7 @@ class SettingsWindow(QWidget):
         cfg["font_family"] = self.font_combo.currentText()
         cfg["control_size"] = self.control_size.value()
         cfg["font_color"] = self._color
+        cfg["accent_color"] = self._accent_color
         cfg["bg_color"] = self._bg_color
         cfg["border_color"] = self._border_color
         cfg["border_enabled"] = self.border_checkbox.isChecked()
