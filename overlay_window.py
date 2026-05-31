@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import (
 )
 
 from google_fonts import ensure_font
+from theme import CAT
 
 
 def _hex_to_rgb(value):
@@ -337,25 +338,25 @@ class OverlayWindow(QWidget):
         control_size = max(6, int(round(cfg.get("control_size", 20))))
         family = cfg.get("font_family", "Roboto")
         family = ensure_font(family) or family
-        color = cfg.get("font_color", "#f0e6d2")
+        # Colours are fixed by the Catppuccin app theme; only opacity and the
+        # border toggle stay user-controllable.
+        color = CAT["text"]
+        accent = CAT["accent"]
         alpha = float(cfg.get("transparency", 0.85))
-        bg_color = cfg.get("bg_color", "#121218")
-        border_color = cfg.get("border_color", "#7882a0")
         border_enabled = bool(cfg.get("border_enabled", True))
 
-        r, g, b = _hex_to_rgb(bg_color)
+        r, g, b = _hex_to_rgb(CAT["base"])
         # Keep the panel itself slightly opaque even at 0% so it still captures
         # mouse clicks (see MIN_PANEL_ALPHA); a fully transparent panel is
         # click-through and can't be dragged or have its checkboxes clicked.
         panel_alpha = max(alpha, self.MIN_PANEL_ALPHA)
         bg = f"rgba({r}, {g}, {b}, {panel_alpha:.3f})"
-        accent = cfg.get("accent_color", "#5cb85c")
         indicator = 16
-        radius = 3
+        radius = 4
         if self.resize_enabled:
-            border = "2px dashed #6ca0ff"
+            border = f"2px dashed {CAT['blue']}"
         elif border_enabled:
-            br, bgc, bb = _hex_to_rgb(border_color)
+            br, bgc, bb = _hex_to_rgb(CAT["surface2"])
             border = f"1px solid rgba({br}, {bgc}, {bb}, {min(1.0, alpha + 0.15):.3f})"
         else:
             border = "none"
@@ -367,9 +368,9 @@ class OverlayWindow(QWidget):
                 border-radius: 10px;
             }}
             QLabel {{ color: {color}; background: transparent; }}
-            #Progress {{ color: rgba(255,255,255,0.65); }}
+            #Progress {{ color: {CAT['subtext0']}; }}
             #Category {{ color: {accent}; font-weight: 700; }}
-            #Hint {{ color: #6ca0ff; }}
+            #Hint {{ color: {CAT['blue']}; }}
             QComboBox#ActCombo {{
                 color: {color}; background: transparent;
                 border: none; font-weight: 700;
@@ -386,32 +387,32 @@ class OverlayWindow(QWidget):
                 margin-right: 4px;
             }}
             QComboBox#ActCombo QAbstractItemView {{
-                background: {bg}; color: {color};
+                background: {CAT['base']}; color: {color};
                 selection-background-color: {accent};
-                selection-color: #ffffff;
-                border: 1px solid rgba(120, 130, 160, 0.6);
+                selection-color: {CAT['crust']};
+                border: 1px solid {CAT['surface1']};
                 outline: none;
             }}
             QToolButton#GearBtn {{
                 color: {color}; background: transparent; border: none;
                 font-size: {control_size}px; padding: 0;
             }}
-            QToolButton#GearBtn:hover {{ color: #ffffff; }}
+            QToolButton#GearBtn:hover {{ color: {accent}; }}
             QToolButton#LockBtn {{
                 color: {color}; background: transparent; border: none;
                 font-size: {control_size}px; padding: 0 2px;
             }}
-            QToolButton#LockBtn:hover {{ color: #ffffff; }}
+            QToolButton#LockBtn:hover {{ color: {accent}; }}
             QToolButton#PrevBtn, QToolButton#NextBtn, QToolButton#ExitBtn {{
                 color: {color}; background: transparent; border: none;
                 font-size: {control_size}px; padding: 0;
             }}
             QToolButton#PrevBtn:hover, QToolButton#NextBtn:hover {{
-                color: #ffffff;
+                color: {accent};
             }}
-            QToolButton#ExitBtn:hover {{ color: #ff6b6b; }}
+            QToolButton#ExitBtn:hover {{ color: {CAT['red']}; }}
             QToolButton#PrevBtn:disabled, QToolButton#NextBtn:disabled {{
-                color: rgba(255,255,255,0.25);
+                color: {CAT['overlay0']};
             }}
             QCheckBox {{ background: transparent; spacing: 0px; }}
             QCheckBox::indicator {{
@@ -429,7 +430,7 @@ class OverlayWindow(QWidget):
                 background: transparent; width: 8px; margin: 0;
             }}
             QScrollBar::handle:vertical {{
-                background: rgba(255,255,255,0.25);
+                background: {CAT['surface2']};
                 border-radius: 4px; min-height: 20px;
             }}
             QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
