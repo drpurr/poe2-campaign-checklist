@@ -24,7 +24,7 @@ PROGRESS_PATH = DATA_DIR / "progress.json"
 
 DEFAULT_CONFIG = {
     "current_act": None,
-    "transparency": 0.85,        # background panel alpha, 0.2 - 1.0
+    "transparency": 0.85,        # background panel alpha, 0.0 - 1.0
     "font_size": 14,             # base text size in points
     "font_family": "Roboto",     # a Google Font family
     "font_color": "#f0e6d2",     # PoE-ish parchment color

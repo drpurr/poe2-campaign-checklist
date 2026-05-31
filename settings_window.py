@@ -58,10 +58,10 @@ class SettingsWindow(QWidget):
 
         # Transparency: slider + manual numeric entry
         self.trans_slider = QSlider(Qt.Orientation.Horizontal)
-        self.trans_slider.setRange(20, 100)
+        self.trans_slider.setRange(0, 100)
         self.trans_slider.valueChanged.connect(self._on_trans_slider)
         self.trans_spin = QSpinBox()
-        self.trans_spin.setRange(20, 100)
+        self.trans_spin.setRange(0, 100)
         self.trans_spin.setSuffix(" %")
         self.trans_spin.valueChanged.connect(self._on_trans_spin)
         trans_row = QHBoxLayout()
