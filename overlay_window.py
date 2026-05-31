@@ -337,7 +337,7 @@ class OverlayWindow(QWidget):
 
         r, g, b = _hex_to_rgb(bg_color)
         bg = f"rgba({r}, {g}, {b}, {alpha:.3f})"
-        accent = "#5cb85c"
+        accent = cfg.get("accent_color", "#5cb85c")
         indicator = 16
         radius = 3
         if self.resize_enabled:

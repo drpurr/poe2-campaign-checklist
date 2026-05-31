@@ -53,6 +53,7 @@ DEFAULT_CONFIG = {
     "font_size": 14,             # base text size in points
     "font_family": "Roboto",     # a Google Font family
     "font_color": "#f0e6d2",     # PoE-ish parchment color
+    "accent_color": "#5cb85c",   # category headers / checkmark accent (green)
     "bg_color": "#121218",       # overlay panel background color
     "border_color": "#7882a0",   # overlay panel border color
     "border_enabled": True,      # whether to draw the panel border

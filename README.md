@@ -19,6 +19,7 @@ all style settings are remembered between sessions.
   - Font size
   - Font family (a curated set of **Google Fonts**, downloaded and cached on first use)
   - Font color (click the color square to pick)
+  - Accent / green color used for category headers and checkmarks (click the color square to pick)
   - Background color (click the color square to pick)
   - Control size (sizes the overlay buttons, not the Act dropdown)
   - **Reset progress** for the current act, **Reset all progress**, or **Reset settings**
