@@ -1,6 +1,6 @@
 {
   "id": "act4",
-  "name": "Act 4 — The Third Edict",
+  "name": "Act 4",
   "order": 6,
   "items": [
     { "id": "a4-asc", "category": "Ascendancy", "text": "Complete the Trail of the Ancestors, speak to Hinekora → +2 weapon-set skill points" },
