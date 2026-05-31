@@ -312,7 +312,7 @@ class OverlayWindow(QWidget):
     def apply_style(self):
         cfg = self.state.config
         font_size = max(6, int(round(cfg.get("font_size", 14))))
-        control_size = max(6, int(round(cfg.get("control_size", 14))))
+        control_size = max(6, int(round(cfg.get("control_size", 20))))
         family = cfg.get("font_family", "Roboto")
         ensure_font(family)
         color = cfg.get("font_color", "#f0e6d2")
@@ -368,7 +368,7 @@ class OverlayWindow(QWidget):
             }}
             QToolButton#GearBtn {{
                 color: {color}; background: transparent; border: none;
-                font-size: {control_size}px; padding: 0 2px;
+                font-size: {control_size}px; padding: 0;
             }}
             QToolButton#GearBtn:hover {{ color: #ffffff; }}
             QToolButton#PrevBtn, QToolButton#NextBtn, QToolButton#ExitBtn {{

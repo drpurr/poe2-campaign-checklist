@@ -31,7 +31,7 @@ DEFAULT_CONFIG = {
     "bg_color": "#121218",       # overlay panel background color
     "border_color": "#7882a0",   # overlay panel border color
     "border_enabled": True,      # whether to draw the panel border
-    "control_size": 14,          # control button size in points (8 - 40)
+    "control_size": 20,          # control button size in points (8 - 40)
     "overlay_geometry": None,    # [x, y, w, h]
 }
 

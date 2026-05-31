@@ -159,7 +159,7 @@ class SettingsWindow(QWidget):
         self.trans_spin.setValue(trans_pct)
         self.font_size.setValue(int(cfg.get("font_size", 14)))
         self._select_font(cfg.get("font_family", "Roboto"))
-        self.control_size.setValue(int(cfg.get("control_size", 14)))
+        self.control_size.setValue(int(cfg.get("control_size", 20)))
         self._color = cfg.get("font_color", "#f0e6d2")
         self._bg_color = cfg.get("bg_color", "#121218")
         self._border_color = cfg.get("border_color", "#7882a0")
