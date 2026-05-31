@@ -4,7 +4,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QFont
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QComboBox, QSlider,
-    QSpinBox, QPushButton, QLabel, QFrame,
+    QSpinBox, QPushButton, QLabel, QFrame, QGroupBox, QSizePolicy,
     QColorDialog, QMessageBox, QCheckBox,
 )
 
@@ -46,21 +46,25 @@ class SettingsWindow(QWidget):
         self._border_color = state.config.get("border_color", "#7882a0")
 
         self.setWindowTitle("Settings")
-        self.setMinimumWidth(400)
+        self.setMinimumWidth(380)
         self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
 
         root = QVBoxLayout(self)
-        root.setContentsMargins(16, 16, 16, 16)
-        root.setSpacing(12)
+        root.setContentsMargins(12, 12, 12, 12)
+        root.setSpacing(10)
 
-        form = QFormLayout()
+        # ----- Appearance group ---------------------------------------------
+        appearance = QGroupBox("Appearance")
+        form = QFormLayout(appearance)
         form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
-        form.setSpacing(10)
+        form.setSpacing(8)
+        form.setContentsMargins(12, 8, 12, 12)
 
         # Font family + size share one row so the size box fills the space that
         # would otherwise sit empty to the right of the family dropdown.
         self.font_combo = QComboBox()
         self.font_combo.addItems(GOOGLE_FONTS)
+        self._make_combo_compact(self.font_combo)
         self.font_combo.currentIndexChanged.connect(self._on_font_changed)
         self.font_size = QSpinBox()
         self.font_size.setRange(8, 40)
@@ -79,23 +83,25 @@ class SettingsWindow(QWidget):
         self.border_swatch = ClickableSwatch(self._pick_border_color)
         self.trans_slider = QSlider(Qt.Orientation.Horizontal)
         self.trans_slider.setRange(0, 100)
-        self.trans_slider.setMinimumWidth(90)
+        self.trans_slider.setMinimumWidth(70)
         self.trans_slider.valueChanged.connect(self._on_trans_slider)
         self.trans_spin = QSpinBox()
         self.trans_spin.setRange(0, 100)
         self.trans_spin.setSuffix(" %")
+        self.trans_spin.setFixedWidth(64)
         self.trans_spin.valueChanged.connect(self._on_trans_spin)
         colors_row = QHBoxLayout()
-        colors_row.setSpacing(14)
+        colors_row.setSpacing(10)
         colors_row.addLayout(self._labeled_swatch("Text", self.color_swatch))
         colors_row.addLayout(self._labeled_swatch("Accent", self.accent_swatch))
         colors_row.addLayout(self._labeled_swatch("BG", self.bg_swatch))
         colors_row.addLayout(self._labeled_swatch("Border", self.border_swatch))
-        colors_row.addSpacing(6)
-        colors_row.addWidget(QLabel("Opacity:"))
-        colors_row.addWidget(self.trans_slider, 1)
-        colors_row.addWidget(self.trans_spin)
         form.addRow("Colors:", self._wrap(colors_row))
+
+        opacity_row = QHBoxLayout()
+        opacity_row.addWidget(self.trans_slider, 1)
+        opacity_row.addWidget(self.trans_spin)
+        form.addRow("Opacity:", self._wrap(opacity_row))
 
         # Border toggle + icon size share one row.
         self.border_checkbox = QCheckBox("Show border")
@@ -111,19 +117,33 @@ class SettingsWindow(QWidget):
         border_row.addWidget(self.control_size)
         form.addRow("", self._wrap(border_row))
 
-        # Per-item choices (e.g. Act 3's permanent Servi's Draught). One labelled
-        # dropdown per checklist item that defines a ``choices`` list; the pick is
-        # substituted into that item's ``$VAR`` in the overlay.
+        root.addWidget(appearance)
+
+        # ----- Act reward choices group -------------------------------------
+        # One labelled dropdown per checklist item that defines a ``choices``
+        # list (e.g. Act 3's permanent Servi's Draught). The pick is substituted
+        # into that item's ``$VAR`` placeholder in the overlay.
         self.choice_combos = []
-        self._build_choice_rows(form)
+        choices_group = QGroupBox("Act Reward Choices")
+        choices_form = QFormLayout(choices_group)
+        choices_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        choices_form.setSpacing(8)
+        choices_form.setContentsMargins(12, 8, 12, 12)
+        self._build_choice_rows(choices_form)
+        # Only show the group if at least one act actually offers a choice.
+        if self.choice_combos:
+            root.addWidget(choices_group)
+        else:
+            choices_group.deleteLater()
 
-        root.addLayout(form)
-
-        # Buttons
+        # Buttons — short labels so all four fit one row at the compact width.
         buttons = QHBoxLayout()
-        self.reset_progress_btn = QPushButton("Reset progress (this act)")
+        buttons.setSpacing(6)
+        self.reset_progress_btn = QPushButton("Reset act")
+        self.reset_progress_btn.setToolTip("Clear all checkmarks for the current act")
         self.reset_progress_btn.clicked.connect(self._reset_progress)
-        self.reset_all_btn = QPushButton("Reset all progress")
+        self.reset_all_btn = QPushButton("Reset all")
+        self.reset_all_btn.setToolTip("Clear all checkmarks for every act")
         self.reset_all_btn.clicked.connect(self._reset_all_progress)
         self.reset_settings_btn = QPushButton("Reset settings")
         self.reset_settings_btn.clicked.connect(self._reset_settings)
@@ -155,6 +175,32 @@ class SettingsWindow(QWidget):
         column.addWidget(swatch, 0, Qt.AlignmentFlag.AlignHCenter)
         return column
 
+    def _make_combo_compact(self, combo):
+        """Stop a combo's longest item from dictating the window width.
+
+        The collapsed box is sized from a fixed small character count (and is
+        free to shrink to the form column, auto-eliding its current text with
+        an ellipsis), while the drop-down popup is widened to show every option
+        in full. The current selection is also exposed via a tooltip on hover.
+        """
+        combo.setSizeAdjustPolicy(
+            QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon
+        )
+        combo.setMinimumContentsLength(12)
+        combo.setSizePolicy(
+            QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed
+        )
+        # Widen the popup list to the longest option so nothing is truncated
+        # while it's open (the collapsed box stays narrow).
+        metrics = combo.fontMetrics()
+        widest = max(
+            (metrics.horizontalAdvance(combo.itemText(i))
+             for i in range(combo.count())),
+            default=0,
+        )
+        combo.view().setMinimumWidth(widest + 40)
+        combo.setToolTip(combo.currentText())
+
     def _build_choice_rows(self, form):
         """Add a dropdown for every checklist item that defines ``choices``.
 
@@ -169,6 +215,7 @@ class SettingsWindow(QWidget):
                 combo = QComboBox()
                 combo.addItems(choices)
                 combo.setProperty("item_id", item["id"])
+                self._make_combo_compact(combo)
                 combo.currentIndexChanged.connect(self._on_choice_changed)
                 self.choice_combos.append(combo)
                 label = item.get("choice_label") or f'{act.get("name", "Act")} choice'
@@ -209,6 +256,7 @@ class SettingsWindow(QWidget):
             index = combo.findText(self.state.get_item_choice(item))
             if index >= 0:
                 combo.setCurrentIndex(index)
+            combo.setToolTip(combo.currentText())
 
     def _select_font(self, family):
         """Select ``family`` in the combo, adding it if it isn't listed."""
@@ -321,6 +369,7 @@ class SettingsWindow(QWidget):
         if self._loading:
             return
         combo = self.sender()
+        combo.setToolTip(combo.currentText())
         self.state.set_item_choice(combo.property("item_id"), combo.currentText())
         # The chosen option is part of the item's text, so rebuild the list.
         self.overlay.rebuild_items()
