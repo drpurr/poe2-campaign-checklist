@@ -4,7 +4,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QFont
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QComboBox, QSlider,
-    QSpinBox, QDoubleSpinBox, QPushButton, QLabel, QFrame,
+    QSpinBox, QPushButton, QLabel, QFrame,
     QColorDialog, QMessageBox, QCheckBox,
 )
 
@@ -108,14 +108,12 @@ class SettingsWindow(QWidget):
         self.border_checkbox.toggled.connect(self._on_border_toggled)
         form.addRow("", self.border_checkbox)
 
-        # Scale
-        self.scale_spin = QDoubleSpinBox()
-        self.scale_spin.setRange(0.5, 3.0)
-        self.scale_spin.setSingleStep(0.1)
-        self.scale_spin.setDecimals(1)
-        self.scale_spin.setSuffix(" ×")
-        self.scale_spin.valueChanged.connect(self._on_style_changed)
-        form.addRow("Scale:", self.scale_spin)
+        # Control size — sizes the overlay buttons (not the Act dropdown)
+        self.control_size = QSpinBox()
+        self.control_size.setRange(8, 40)
+        self.control_size.setSuffix(" pt")
+        self.control_size.valueChanged.connect(self._on_style_changed)
+        form.addRow("Control size:", self.control_size)
 
         root.addLayout(form)
 
@@ -161,7 +159,7 @@ class SettingsWindow(QWidget):
         self.trans_spin.setValue(trans_pct)
         self.font_size.setValue(int(cfg.get("font_size", 14)))
         self._select_font(cfg.get("font_family", "Roboto"))
-        self.scale_spin.setValue(float(cfg.get("scale", 1.0)))
+        self.control_size.setValue(int(cfg.get("control_size", 20)))
         self._color = cfg.get("font_color", "#f0e6d2")
         self._bg_color = cfg.get("bg_color", "#121218")
         self._border_color = cfg.get("border_color", "#7882a0")
@@ -269,7 +267,7 @@ class SettingsWindow(QWidget):
         cfg["transparency"] = self.trans_slider.value() / 100.0
         cfg["font_size"] = self.font_size.value()
         cfg["font_family"] = self.font_combo.currentText()
-        cfg["scale"] = round(self.scale_spin.value(), 2)
+        cfg["control_size"] = self.control_size.value()
         cfg["font_color"] = self._color
         cfg["bg_color"] = self._bg_color
         cfg["border_color"] = self._border_color

@@ -20,7 +20,7 @@ all style settings are remembered between sessions.
   - Font family (a curated set of **Google Fonts**, downloaded and cached on first use)
   - Font color (click the color square to pick)
   - Background color (click the color square to pick)
-  - Scale (overall UI multiplier)
+  - Control size (sizes the overlay buttons, not the Act dropdown)
   - **Reset progress** for the current act, **Reset all progress**, or **Reset settings**
 - **Drag to move** the overlay any time; **drag the edges/corners to resize** while the settings window is open.
 - **System tray icon** for Settings, Show/Hide, Reset position, and Quit.

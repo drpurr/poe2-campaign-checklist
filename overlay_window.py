@@ -118,7 +118,7 @@ class OverlayWindow(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         self.setMouseTracking(True)
         # Allow the overlay to be dragged down to a small size regardless of
-        # how large the (scaled) content's natural size hint is.
+        # how large the content's natural size hint is.
         self.setMinimumSize(self.MIN_W, self.MIN_H)
 
         root = QVBoxLayout(self)
@@ -317,8 +317,8 @@ class OverlayWindow(QWidget):
     # ----- styling -------------------------------------------------------
     def apply_style(self):
         cfg = self.state.config
-        scale = float(cfg.get("scale", 1.0))
-        font_size = max(6, int(round(cfg.get("font_size", 14) * scale)))
+        font_size = max(6, int(round(cfg.get("font_size", 14))))
+        control_size = max(6, int(round(cfg.get("control_size", 20))))
         family = cfg.get("font_family", "Roboto")
         ensure_font(family)
         color = cfg.get("font_color", "#f0e6d2")
@@ -330,8 +330,8 @@ class OverlayWindow(QWidget):
         r, g, b = _hex_to_rgb(bg_color)
         bg = f"rgba({r}, {g}, {b}, {alpha:.3f})"
         accent = "#5cb85c"
-        indicator = max(12, int(round(16 * scale)))
-        radius = max(2, int(round(3 * scale)))
+        indicator = 16
+        radius = 3
         if self.resize_enabled:
             border = "2px dashed #6ca0ff"
         elif border_enabled:
@@ -374,12 +374,12 @@ class OverlayWindow(QWidget):
             }}
             QToolButton#GearBtn {{
                 color: {color}; background: transparent; border: none;
-                font-size: {font_size}px; padding: 0 2px;
+                font-size: {control_size}px; padding: 0;
             }}
             QToolButton#GearBtn:hover {{ color: #ffffff; }}
             QToolButton#PrevBtn, QToolButton#NextBtn, QToolButton#ExitBtn {{
                 color: {color}; background: transparent; border: none;
-                font-size: {font_size}px; padding: 0;
+                font-size: {control_size}px; padding: 0;
             }}
             QToolButton#PrevBtn:hover, QToolButton#NextBtn:hover {{
                 color: #ffffff;
