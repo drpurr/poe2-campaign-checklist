@@ -23,6 +23,7 @@ all style settings are remembered between sessions.
   - Control size (sizes the overlay buttons, not the Act dropdown)
   - **Reset progress** for the current act, **Reset all progress**, or **Reset settings**
 - **Drag to move** the overlay any time; **drag the edges/corners to resize** while the settings window is open.
+- **Lock the overlay position** with the lock button (next to the settings gear) to prevent accidental dragging.
 - **System tray icon** for Settings, Show/Hide, Reset position, and Quit.
 
 ## Requirements

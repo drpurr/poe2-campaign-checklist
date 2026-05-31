@@ -58,6 +58,7 @@ DEFAULT_CONFIG = {
     "border_enabled": True,      # whether to draw the panel border
     "control_size": 20,          # control button size in points (8 - 40)
     "overlay_geometry": None,    # [x, y, w, h]
+    "locked": False,             # whether the overlay position is locked
 }
 
 

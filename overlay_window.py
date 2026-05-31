@@ -170,6 +170,10 @@ class OverlayWindow(QWidget):
         self.gear_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.gear_btn.setToolTip("Open settings")
         self.gear_btn.clicked.connect(self._open_settings)
+        self.lock_btn = QToolButton()
+        self.lock_btn.setObjectName("LockBtn")
+        self.lock_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.lock_btn.clicked.connect(self._toggle_lock)
         self.exit_btn = QToolButton()
         self.exit_btn.setObjectName("ExitBtn")
         self.exit_btn.setText("✕")  # exit
@@ -210,12 +214,16 @@ class OverlayWindow(QWidget):
         self.hint_label.hide()
         card_layout.addWidget(self.hint_label)
 
-        # Footer: settings gear pinned to the bottom-right corner
+        # Footer: lock + settings gear pinned to the bottom-right corner
         footer = QHBoxLayout()
         footer.setSpacing(2)
         footer.addStretch(1)
+        footer.addWidget(self.lock_btn)
         footer.addWidget(self.gear_btn)
         card_layout.addLayout(footer)
+
+        self.locked = bool(self.state.config.get("locked", False))
+        self._update_lock_button()
 
         self._restore_geometry()
         self.rebuild_items()
@@ -377,6 +385,11 @@ class OverlayWindow(QWidget):
                 font-size: {control_size}px; padding: 0;
             }}
             QToolButton#GearBtn:hover {{ color: #ffffff; }}
+            QToolButton#LockBtn {{
+                color: {color}; background: transparent; border: none;
+                font-size: {font_size}px; padding: 0 2px;
+            }}
+            QToolButton#LockBtn:hover {{ color: #ffffff; }}
             QToolButton#PrevBtn, QToolButton#NextBtn, QToolButton#ExitBtn {{
                 color: {color}; background: transparent; border: none;
                 font-size: {control_size}px; padding: 0;
@@ -486,6 +499,8 @@ class OverlayWindow(QWidget):
                 self._start_geom = QRect(self.geometry())
                 self._start_mouse = event.globalPosition().toPoint()
                 return
+        if self.locked:
+            return
         self._drag_pos = event.globalPosition().toPoint() - self.frameGeometry().topLeft()
 
     def mouseMoveEvent(self, event):
@@ -562,6 +577,27 @@ class OverlayWindow(QWidget):
     def _open_settings(self):
         if self.on_open_settings:
             self.on_open_settings()
+
+    def _toggle_lock(self):
+        """Toggle whether the overlay position is locked."""
+        self.locked = not self.locked
+        self.state.config["locked"] = self.locked
+        self.state.save_config()
+        self._update_lock_button()
+
+    def _update_lock_button(self):
+        """Refresh the lock button's icon and tooltip to match state."""
+        if self.locked:
+            self.lock_btn.setText("🔒")
+            self.lock_btn.setToolTip("Unlock overlay position")
+        else:
+            self.lock_btn.setText("🔓")
+            self.lock_btn.setToolTip("Lock overlay position")
+
+    def sync_lock_from_config(self):
+        """Re-read the locked state from config and refresh the button."""
+        self.locked = bool(self.state.config.get("locked", False))
+        self._update_lock_button()
 
     def _quit(self):
         if self.on_quit:
