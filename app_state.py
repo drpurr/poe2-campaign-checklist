@@ -60,6 +60,7 @@ DEFAULT_CONFIG = {
     "control_size": 20,          # control button size in points (8 - 40)
     "overlay_geometry": None,    # [x, y, w, h]
     "locked": False,             # whether the overlay position is locked
+    "item_choices": {},          # per-item picks: {item_id: chosen option text}
 }
 
 
@@ -145,6 +146,37 @@ class AppState:
         """Clear every checkmark across all acts."""
         self.progress = {}
         self.save_progress()
+
+    # ----- per-item choices ---------------------------------------------
+    def get_item_choice(self, item):
+        """Return the chosen option text for a ``choices`` item.
+
+        Falls back to the item's first listed choice when the user hasn't
+        picked one yet, so ``$VAR`` always renders as a real option.
+        """
+        choices = item.get("choices") or []
+        if not choices:
+            return ""
+        chosen = self.config.get("item_choices", {}).get(item["id"])
+        return chosen if chosen in choices else choices[0]
+
+    def set_item_choice(self, item_id, value):
+        """Persist the chosen option for ``item_id``."""
+        # Copy-on-write: a fresh config shallow-copies DEFAULT_CONFIG, so its
+        # "item_choices" may be the shared default dict. Replace it with a new
+        # dict rather than mutating in place to avoid polluting the default.
+        existing = self.config.get("item_choices")
+        choices = dict(existing) if isinstance(existing, dict) else {}
+        choices[item_id] = value
+        self.config["item_choices"] = choices
+        self.save_config()
+
+    def item_text(self, item):
+        """Render an item's display text, substituting ``$VAR`` with its choice."""
+        text = item.get("text", "")
+        if "$VAR" in text:
+            text = text.replace("$VAR", self.get_item_choice(item))
+        return text
 
     def act_completion(self, act_id):
         """Return (done, total) for the given act."""

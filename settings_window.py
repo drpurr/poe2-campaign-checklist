@@ -110,6 +110,12 @@ class SettingsWindow(QWidget):
         self.control_size.valueChanged.connect(self._on_style_changed)
         form.addRow("Control size:", self.control_size)
 
+        # Per-item choices (e.g. Act 3's permanent Servi's Draught). One labelled
+        # dropdown per checklist item that defines a ``choices`` list; the pick is
+        # substituted into that item's ``$VAR`` in the overlay.
+        self.choice_combos = []
+        self._build_choice_rows(form)
+
         root.addLayout(form)
 
         tip = QLabel(
@@ -157,6 +163,25 @@ class SettingsWindow(QWidget):
         column.addWidget(swatch, 0, Qt.AlignmentFlag.AlignHCenter)
         return column
 
+    def _build_choice_rows(self, form):
+        """Add a dropdown for every checklist item that defines ``choices``.
+
+        Each combo carries the owning item's id so its selection can be saved
+        and substituted into that item's ``$VAR`` placeholder in the overlay.
+        """
+        for act in self.state.acts:
+            for item in act.get("items", []):
+                choices = item.get("choices")
+                if not choices:
+                    continue
+                combo = QComboBox()
+                combo.addItems(choices)
+                combo.setProperty("item_id", item["id"])
+                combo.currentIndexChanged.connect(self._on_choice_changed)
+                self.choice_combos.append(combo)
+                label = item.get("choice_label") or f'{act.get("name", "Act")} choice'
+                form.addRow(f"{label}:", combo)
+
     def _load_from_config(self):
         self._loading = True
         cfg = self.state.config
@@ -175,7 +200,23 @@ class SettingsWindow(QWidget):
         self._update_accent_swatch()
         self._update_bg_swatch()
         self._update_border_swatch()
+        self._load_choices()
         self._loading = False
+
+    def _load_choices(self):
+        """Select each choice combo to match the item's saved (or default) pick."""
+        items = {
+            item["id"]: item
+            for act in self.state.acts
+            for item in act.get("items", [])
+        }
+        for combo in self.choice_combos:
+            item = items.get(combo.property("item_id"))
+            if item is None:
+                continue
+            index = combo.findText(self.state.get_item_choice(item))
+            if index >= 0:
+                combo.setCurrentIndex(index)
 
     def _select_font(self, family):
         """Select ``family`` in the combo, adding it if it isn't listed."""
@@ -284,6 +325,14 @@ class SettingsWindow(QWidget):
         self._preview_font(self.font_combo.currentText())
         self._on_style_changed()
 
+    def _on_choice_changed(self, _index):
+        if self._loading:
+            return
+        combo = self.sender()
+        self.state.set_item_choice(combo.property("item_id"), combo.currentText())
+        # The chosen option is part of the item's text, so rebuild the list.
+        self.overlay.rebuild_items()
+
     def _on_style_changed(self, *_):
         if self._loading:
             return
@@ -329,6 +378,7 @@ class SettingsWindow(QWidget):
         self.state.save_config()
         self._load_from_config()
         self.overlay.apply_style()
+        self.overlay.rebuild_items()
         self.overlay.sync_lock_from_config()
 
     # ----- resize mode tie-in -------------------------------------------
