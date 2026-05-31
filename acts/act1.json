@@ -1,6 +1,6 @@
 {
   "id": "act1",
-  "name": "Act 1 — Ogham",
+  "name": "Act 1",
   "order": 1,
   "items": [
     { "id": "a1-sp1", "category": "Skill Points & Bonuses", "text": "Hunting Grounds: kill Crowbell → +2 weapon-set skill points" },

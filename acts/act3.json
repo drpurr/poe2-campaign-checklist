@@ -1,6 +1,6 @@
 {
   "id": "act3",
-  "name": "Act 3 — Chimeral Jungle",
+  "name": "Act 3",
   "order": 3,
   "items": [
     { "id": "a3-asc", "category": "Ascendancy", "text": "Complete the Trial of Chaos (Ascendancy)" },

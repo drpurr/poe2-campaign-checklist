@@ -1,6 +1,6 @@
 {
   "id": "act2",
-  "name": "Act 2 — Vastiri Desert",
+  "name": "Act 2",
   "order": 2,
   "items": [
     { "id": "a2-asc", "category": "Ascendancy", "text": "Find a Barya and complete the Trial of the Sekhemas (1st Ascendancy)" },
