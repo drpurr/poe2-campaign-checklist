@@ -50,8 +50,11 @@ _TTF_USER_AGENT = (
     "Mozilla/5.0 (Windows NT 5.1; rv:6.0) Gecko/20100101 Firefox/6.0"
 )
 
-# Remember which families we've already registered this session.
-_loaded = set()
+# Map a requested family -> the family name Qt actually registered it under.
+# (Downloaded TTFs frequently expose an internal family name that differs from
+# the Google Fonts API name, e.g. "Roboto Condensed".) We cache the resolved
+# name so callers always build their QFont from a family Qt can match exactly.
+_loaded = {}
 
 
 def _cache_path(family):
@@ -61,7 +64,9 @@ def _cache_path(family):
 
 def _download_font(family, dest):
     """Fetch a TrueType file for ``family`` from Google Fonts into ``dest``."""
-    css_url = "https://fonts.googleapis.com/css?family=" + urllib.parse.quote(
+    # The CSS API expects spaces in family names encoded as ``+`` (e.g.
+    # ``Open+Sans``); ``%20`` is rejected for multi-word families.
+    css_url = "https://fonts.googleapis.com/css?family=" + urllib.parse.quote_plus(
         family
     )
     request = urllib.request.Request(css_url, headers={"User-Agent": _TTF_USER_AGENT})
@@ -80,14 +85,19 @@ def _download_font(family, dest):
 def ensure_font(family):
     """Make ``family`` available to Qt, downloading + caching it if needed.
 
-    Returns True if the font is registered (now or already), False otherwise.
+    Returns the family name to use when constructing a ``QFont`` (which may
+    differ from ``family`` for downloaded fonts), or ``None`` if the font could
+    not be made available. The returned name is what Qt actually registered, so
+    building ``QFont`` with it avoids a silent fallback to a default family.
     """
-    if not family or family in _loaded:
-        return family in _loaded
+    if not family:
+        return None
+    if family in _loaded:
+        return _loaded[family]
     # Already a font Qt knows about (e.g. installed system font)? Nothing to do.
     if family in QFontDatabase.families():
-        _loaded.add(family)
-        return True
+        _loaded[family] = family
+        return family
 
     cache = _cache_path(family)
     try:
@@ -95,8 +105,10 @@ def ensure_font(family):
             _download_font(family, cache)
         font_id = QFontDatabase.addApplicationFont(str(cache))
         if font_id != -1:
-            _loaded.add(family)
-            return True
+            registered = QFontDatabase.applicationFontFamilies(font_id)
+            resolved = registered[0] if registered else family
+            _loaded[family] = resolved
+            return resolved
     except Exception as exc:  # noqa: BLE001 - best effort; fall back silently
         print(f"[fonts] Could not load '{family}': {exc}", file=sys.stderr)
-    return False
+    return None
