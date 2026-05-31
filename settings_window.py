@@ -57,58 +57,59 @@ class SettingsWindow(QWidget):
         form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
         form.setSpacing(10)
 
-        # Transparency: slider + manual numeric entry
+        # Font family + size share one row so the size box fills the space that
+        # would otherwise sit empty to the right of the family dropdown.
+        self.font_combo = QComboBox()
+        self.font_combo.addItems(GOOGLE_FONTS)
+        self.font_combo.currentIndexChanged.connect(self._on_font_changed)
+        self.font_size = QSpinBox()
+        self.font_size.setRange(8, 40)
+        self.font_size.setSuffix(" pt")
+        self.font_size.valueChanged.connect(self._on_style_changed)
+        font_row = QHBoxLayout()
+        font_row.addWidget(self.font_combo, 1)
+        font_row.addWidget(QLabel("Size:"))
+        font_row.addWidget(self.font_size)
+        form.addRow("Font:", self._wrap(font_row))
+
+        # Colors (compact labelled swatches) + transparency share one row.
+        self.color_swatch = ClickableSwatch(self._pick_color)
+        self.accent_swatch = ClickableSwatch(self._pick_accent_color)
+        self.bg_swatch = ClickableSwatch(self._pick_bg_color)
+        self.border_swatch = ClickableSwatch(self._pick_border_color)
         self.trans_slider = QSlider(Qt.Orientation.Horizontal)
         self.trans_slider.setRange(0, 100)
+        self.trans_slider.setMinimumWidth(90)
         self.trans_slider.valueChanged.connect(self._on_trans_slider)
         self.trans_spin = QSpinBox()
         self.trans_spin.setRange(0, 100)
         self.trans_spin.setSuffix(" %")
         self.trans_spin.valueChanged.connect(self._on_trans_spin)
-        trans_row = QHBoxLayout()
-        trans_row.addWidget(self.trans_slider, 1)
-        trans_row.addWidget(self.trans_spin)
-        form.addRow("Transparency:", self._wrap(trans_row))
-
-        # Font size
-        self.font_size = QSpinBox()
-        self.font_size.setRange(8, 40)
-        self.font_size.setSuffix(" pt")
-        self.font_size.valueChanged.connect(self._on_style_changed)
-        form.addRow("Font size:", self.font_size)
-
-        # Font family (Google Fonts)
-        self.font_combo = QComboBox()
-        self.font_combo.addItems(GOOGLE_FONTS)
-        self.font_combo.currentIndexChanged.connect(self._on_font_changed)
-        form.addRow("Font family:", self.font_combo)
-
-        # Colors — grouped into one compact row of labelled swatches so they
-        # don't each consume a full form row of vertical space.
-        self.color_swatch = ClickableSwatch(self._pick_color)
-        self.accent_swatch = ClickableSwatch(self._pick_accent_color)
-        self.bg_swatch = ClickableSwatch(self._pick_bg_color)
-        self.border_swatch = ClickableSwatch(self._pick_border_color)
         colors_row = QHBoxLayout()
         colors_row.setSpacing(14)
         colors_row.addLayout(self._labeled_swatch("Text", self.color_swatch))
         colors_row.addLayout(self._labeled_swatch("Accent", self.accent_swatch))
         colors_row.addLayout(self._labeled_swatch("BG", self.bg_swatch))
         colors_row.addLayout(self._labeled_swatch("Border", self.border_swatch))
-        colors_row.addStretch(1)
+        colors_row.addSpacing(6)
+        colors_row.addWidget(QLabel("Opacity:"))
+        colors_row.addWidget(self.trans_slider, 1)
+        colors_row.addWidget(self.trans_spin)
         form.addRow("Colors:", self._wrap(colors_row))
 
-        # Border toggle
+        # Border toggle + icon size share one row.
         self.border_checkbox = QCheckBox("Show border")
         self.border_checkbox.toggled.connect(self._on_border_toggled)
-        form.addRow("", self.border_checkbox)
-
-        # Control size — sizes the overlay buttons (not the Act dropdown)
         self.control_size = QSpinBox()
         self.control_size.setRange(8, 40)
         self.control_size.setSuffix(" pt")
         self.control_size.valueChanged.connect(self._on_style_changed)
-        form.addRow("Control size:", self.control_size)
+        border_row = QHBoxLayout()
+        border_row.addWidget(self.border_checkbox)
+        border_row.addStretch(1)
+        border_row.addWidget(QLabel("Icon size:"))
+        border_row.addWidget(self.control_size)
+        form.addRow("", self._wrap(border_row))
 
         # Per-item choices (e.g. Act 3's permanent Servi's Draught). One labelled
         # dropdown per checklist item that defines a ``choices`` list; the pick is
@@ -117,15 +118,6 @@ class SettingsWindow(QWidget):
         self._build_choice_rows(form)
 
         root.addLayout(form)
-
-        tip = QLabel(
-            "Tip: while this window is open the overlay is in resize mode — "
-            "drag its edges or corners to resize, or drag the body to move it. "
-            "Changes apply live and are saved automatically."
-        )
-        tip.setWordWrap(True)
-        tip.setStyleSheet("color: #888;")
-        root.addWidget(tip)
 
         # Buttons
         buttons = QHBoxLayout()
