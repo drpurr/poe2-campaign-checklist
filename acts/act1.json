@@ -9,7 +9,7 @@
     { "id": "a1-sp4", "category": "Skill Points & Bonuses", "text": "Clearfell: Beira of the Rotten Pack → +10% Cold Resistance" },
     { "id": "a1-sp5", "category": "Skill Points & Bonuses", "text": "Ogham Manor: click Psalm of Madness, defeat Candlemass → +20 Maximum Life" },
 
-    { "id": "a1-v1", "category": "Vendors & Rewards", "text": "Reaching Clearfell: pick up your first Uncut Skill Gem" },
-    { "id": "a1-v2", "category": "Vendors & Rewards", "text": "Ogham Village: bring Smithing Tools to Renly → unlock the Salvaging Bench" }
+    { "id": "a1-v1", "category": "Misc", "text": "Reaching Clearfell: pick up your first Uncut Skill Gem" },
+    { "id": "a1-v2", "category": "Misc", "text": "Ogham Village: bring Smithing Tools to Renly → unlock the Salvaging Bench" }
   ]
 }

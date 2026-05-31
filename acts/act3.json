@@ -3,15 +3,13 @@
   "name": "Act 3",
   "order": 3,
   "items": [
-    { "id": "a3-asc", "category": "Ascendancy", "text": "Complete the Trial of Chaos (Ascendancy)" },
-
     { "id": "a3-sp1", "category": "Skill Points & Bonuses", "text": "Jungle Ruins: Mighty Silverfist → +2 weapon-set skill points" },
     { "id": "a3-sp2", "category": "Skill Points & Bonuses", "text": "The Azak Bog: defeat Ignagduk, the Bog Witch → +30 Spirit (+ guaranteed Uncut Spirit Gem)" },
     { "id": "a3-sp3", "category": "Skill Points & Bonuses", "text": "Venom Crypts: give the Venom Vial to Servi → choose a permanent Draught (PERMANENT — cannot change!)" },
     { "id": "a3-sp4", "category": "Skill Points & Bonuses", "text": "Jiquani's Machinarium: Blackjaw, the Remnant → +10% Fire Resistance" },
     { "id": "a3-sp5", "category": "Skill Points & Bonuses", "text": "Aggorat / Utzaal: get a Sacrificial Heart, sacrifice at the altar → +2 weapon-set skill points" },
 
-    { "id": "a3-v1", "category": "Vendors & Rewards", "text": "The Molten Vault: defeat Mektul, the Forgemaster → unlock the Reforging Bench (Oswald)" },
-    { "id": "a3-v2", "category": "Vendors & Rewards", "text": "Sandswept Marsh: open the Orok Campfire basket → guaranteed Lesser Jeweller's Orb" }
+    { "id": "a3-v1", "category": "Misc", "text": "The Molten Vault: defeat Mektul, the Forgemaster → unlock the Reforging Bench (Oswald)" },
+    { "id": "a3-v2", "category": "Misc", "text": "Sandswept Marsh: open the Orok Campfire basket → guaranteed Lesser Jeweller's Orb" }
   ]
 }
