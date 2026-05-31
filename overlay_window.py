@@ -136,14 +136,15 @@ class OverlayWindow(QWidget):
         card_layout.setContentsMargins(14, 10, 14, 14)
         card_layout.setSpacing(8)
 
-        # Header: act selector + progress + prev/next act + close + settings gear
+        # Header: act selector on the left, controls grouped on the right
         header = QHBoxLayout()
+        header.setSpacing(0)
         self.act_combo = QComboBox()
         self.act_combo.setObjectName("ActCombo")
         self.act_combo.setCursor(Qt.CursorShape.PointingHandCursor)
         self.act_combo.setToolTip("Switch act")
         self.act_combo.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred
         )
         self.act_combo.setMinimumWidth(0)
         for act in self.state.acts:
@@ -175,12 +176,12 @@ class OverlayWindow(QWidget):
         self.exit_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.exit_btn.setToolTip("Exit")
         self.exit_btn.clicked.connect(self._quit)
-        header.addWidget(self.act_combo, 1)
-        header.addStretch(0)
+        header.addWidget(self.act_combo, 0)
+        header.addStretch(1)
         header.addWidget(self.progress_label)
+        header.addSpacing(8)
         header.addWidget(self.prev_btn)
         header.addWidget(self.next_btn)
-        header.addWidget(self.gear_btn)
         header.addWidget(self.exit_btn)
         card_layout.addLayout(header)
 
@@ -208,6 +209,13 @@ class OverlayWindow(QWidget):
         self.hint_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.hint_label.hide()
         card_layout.addWidget(self.hint_label)
+
+        # Footer: settings gear pinned to the bottom-right corner
+        footer = QHBoxLayout()
+        footer.setSpacing(2)
+        footer.addStretch(1)
+        footer.addWidget(self.gear_btn)
+        card_layout.addLayout(footer)
 
         self._restore_geometry()
         self.rebuild_items()
@@ -360,12 +368,12 @@ class OverlayWindow(QWidget):
             }}
             QToolButton#GearBtn {{
                 color: {color}; background: transparent; border: none;
-                font-size: {font_size + 4}px; padding: 0 2px;
+                font-size: {font_size}px; padding: 0 2px;
             }}
             QToolButton#GearBtn:hover {{ color: #ffffff; }}
             QToolButton#PrevBtn, QToolButton#NextBtn, QToolButton#ExitBtn {{
                 color: {color}; background: transparent; border: none;
-                font-size: {font_size + 4}px; padding: 0 2px;
+                font-size: {font_size}px; padding: 0;
             }}
             QToolButton#PrevBtn:hover, QToolButton#NextBtn:hover {{
                 color: #ffffff;
@@ -402,9 +410,9 @@ class OverlayWindow(QWidget):
         """)
 
         base_font = QFont(family, font_size)
-        title_font = QFont(family, font_size + 3)
+        title_font = QFont(family, font_size)
         title_font.setBold(True)
-        small_font = QFont(family, max(6, font_size - 2))
+        small_font = QFont(family, font_size)
 
         self.act_combo.setFont(title_font)
         self.progress_label.setFont(small_font)
