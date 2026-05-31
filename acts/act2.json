@@ -5,7 +5,13 @@
   "items": [
     { "id": "a2-sp1", "category": "Skill Points & Bonuses", "text": "Keth: defeat Kabala, Constrictor Queen → +2 weapon-set skill points" },
     { "id": "a2-sp2", "category": "Skill Points & Bonuses", "text": "The Bone Pits: collect the Sun Clan Relic" },
-    { "id": "a2-sp3", "category": "Skill Points & Bonuses", "text": "Valley of the Titans: deliver Kabala + Sun Clan Relics → choose a permanent bonus (swappable)" },
+    { "id": "a2-sp3", "category": "Skill Points & Bonuses", "text": "Valley of the Titans: deliver Kabala + Sun Clan Relics → Choose: $VAR", 
+	"choice_label": "Act 2 — Clan Relics", 
+	"choices": [
+		"+30% increased Charm Charges Gained",
+		"+30% increased Charm Effect Duration"
+	]
+	},
     { "id": "a2-sp4", "category": "Skill Points & Bonuses", "text": "Deshar: find the Final Letter, give to Shambrin → +2 weapon-set skill points" },
     { "id": "a2-sp5", "category": "Skill Points & Bonuses", "text": "The Spires of Deshar: click the Sisters of Garukhan Shrine → +10% Lightning Resistance" }
   ]

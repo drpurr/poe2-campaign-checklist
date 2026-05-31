@@ -8,7 +8,7 @@
     {
       "id": "a3-sp3",
       "category": "Skill Points & Bonuses",
-      "text": "Venom Crypts: give the Venom Vial to Servi → Choose $VAR (PERMANENT — cannot change!)",
+      "text": "Venom Crypts: give the Venom Vial to Servi → Choose $VAR",
       "choice_label": "Act 3 — Servi's Draught",
       "choices": [
         "+25% increased Stun Threshold",
