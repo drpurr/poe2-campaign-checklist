@@ -1,14 +1,39 @@
 """Configuration, act data, and progress persistence for the PoE2 Campaign Overlay.
 
-Everything is stored *next to the app* so the whole thing is portable:
+The act definitions ship *next to the app* so you can edit them, while your
+personal settings and progress live in a per-user folder under the OS app-data
+location (``poe2-campaign-tracker``):
 - acts/*.json      -> the checklist definition for each act (you can edit these)
-- data/config.json -> overlay settings + which act you're on + window geometry
-- data/progress.json -> which items you've checked off, per act
+- <appdata>/poe2-campaign-tracker/config.json   -> overlay settings + which act you're on + window geometry
+- <appdata>/poe2-campaign-tracker/progress.json -> which items you've checked off, per act
 """
 
 import json
+import os
 import sys
 from pathlib import Path
+
+APP_DIR_NAME = "poe2-campaign-tracker"
+
+
+def _user_data_dir():
+    """Return the per-user data directory for this app, creating no files.
+
+    Uses the platform-appropriate app-data location:
+    - Windows: ``%APPDATA%`` (falls back to ``~/AppData/Roaming``)
+    - macOS:   ``~/Library/Application Support``
+    - Linux:   ``$XDG_DATA_HOME`` (falls back to ``~/.local/share``)
+    """
+    if sys.platform == "win32":
+        base = os.environ.get("APPDATA")
+        root = Path(base) if base else Path.home() / "AppData" / "Roaming"
+    elif sys.platform == "darwin":
+        root = Path.home() / "Library" / "Application Support"
+    else:
+        base = os.environ.get("XDG_DATA_HOME")
+        root = Path(base) if base else Path.home() / ".local" / "share"
+    return root / APP_DIR_NAME
+
 
 # Resolve the application's base directory whether we're running from source
 # (python main.py) or from a PyInstaller-built executable.
@@ -18,7 +43,7 @@ else:
     BASE_DIR = Path(__file__).resolve().parent
 
 ACTS_DIR = BASE_DIR / "acts"
-DATA_DIR = BASE_DIR / "data"
+DATA_DIR = _user_data_dir()
 CONFIG_PATH = DATA_DIR / "config.json"
 PROGRESS_PATH = DATA_DIR / "progress.json"
 

@@ -98,11 +98,12 @@ is yours to edit.
 
 ## Where your data lives
 
-A `data\` folder is created next to the app:
+A `poe2-campaign-tracker` folder is created in your user's app-data location
+(on Windows that's `%APPDATA%\poe2-campaign-tracker`):
 
-- `data\config.json` — settings, current act, and overlay geometry
-- `data\progress.json` — your checked items per act
-- `data\fonts\` — Google Font files cached after their first use
+- `config.json` — settings, current act, and overlay geometry
+- `progress.json` — your checked items per act
+- `fonts\` — Google Font files cached after their first use
 
 Delete these to start fresh. (To reset just one act's checkmarks, use
 **Reset progress (this act)** in Settings.)
