@@ -188,8 +188,9 @@ class SettingsWindow(QWidget):
 
     def _preview_font(self, family):
         """Render the font dropdown in the selected family when available."""
-        if ensure_font(family):
-            self.font_combo.setFont(QFont(family))
+        resolved = ensure_font(family)
+        if resolved:
+            self.font_combo.setFont(QFont(resolved))
 
     def sync_from_state(self):
         """Refresh the window after the overlay changed state (e.g. next act)."""

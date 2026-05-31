@@ -328,7 +328,7 @@ class OverlayWindow(QWidget):
         font_size = max(6, int(round(cfg.get("font_size", 14))))
         control_size = max(6, int(round(cfg.get("control_size", 20))))
         family = cfg.get("font_family", "Roboto")
-        ensure_font(family)
+        family = ensure_font(family) or family
         color = cfg.get("font_color", "#f0e6d2")
         alpha = float(cfg.get("transparency", 0.85))
         bg_color = cfg.get("bg_color", "#121218")
