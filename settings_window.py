@@ -306,6 +306,7 @@ class SettingsWindow(QWidget):
         self.state.save_config()
         self._load_from_config()
         self.overlay.apply_style()
+        self.overlay.sync_lock_from_config()
 
     # ----- resize mode tie-in -------------------------------------------
     def showEvent(self, event):

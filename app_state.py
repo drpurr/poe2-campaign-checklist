@@ -33,6 +33,7 @@ DEFAULT_CONFIG = {
     "border_enabled": True,      # whether to draw the panel border
     "scale": 1.0,                # global UI scale multiplier, 0.5 - 3.0
     "overlay_geometry": None,    # [x, y, w, h]
+    "locked": False,             # whether the overlay position is locked
 }
 
 
