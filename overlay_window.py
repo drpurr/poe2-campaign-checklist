@@ -356,8 +356,8 @@ class OverlayWindow(QWidget):
         if self.resize_enabled:
             border = f"2px dashed {CAT['blue']}"
         elif border_enabled:
-            br, bgc, bb = _hex_to_rgb(CAT["surface2"])
-            border = f"1px solid rgba({br}, {bgc}, {bb}, {min(1.0, alpha + 0.15):.3f})"
+            # Match the settings window's frame: a solid 2px mauve accent border.
+            border = f"2px solid {CAT['accent']}"
         else:
             border = "none"
 

@@ -107,6 +107,31 @@ QComboBox QAbstractItemView {{
     outline: none;
 }}
 
+/* Spin boxes: keep the up/down buttons in a reserved strip on the right and
+   pad the text past them so right-aligned digits are never covered. */
+QSpinBox {{ padding-right: 20px; }}
+QSpinBox::up-button {{
+    subcontrol-origin: border; subcontrol-position: top right;
+    width: 16px; border-left: 1px solid {surface1};
+    border-top-right-radius: 5px;
+}}
+QSpinBox::down-button {{
+    subcontrol-origin: border; subcontrol-position: bottom right;
+    width: 16px; border-left: 1px solid {surface1};
+    border-bottom-right-radius: 5px;
+}}
+QSpinBox::up-button:hover, QSpinBox::down-button:hover {{ background: {surface1}; }}
+QSpinBox::up-arrow {{
+    width: 0; height: 0; image: none;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-bottom: 5px solid {subtext1};
+}}
+QSpinBox::down-arrow {{
+    width: 0; height: 0; image: none;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-top: 5px solid {subtext1};
+}}
+
 QSlider::groove:horizontal {{ height: 6px; border-radius: 3px; background: {surface1}; }}
 QSlider::sub-page:horizontal {{ height: 6px; border-radius: 3px; background: {accent}; }}
 QSlider::handle:horizontal {{
