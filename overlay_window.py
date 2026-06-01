@@ -1,7 +1,7 @@
 """The always-on-top checklist overlay window."""
 
-from PyQt6.QtCore import Qt, QRect, pyqtSignal
-from PyQt6.QtGui import QColor, QFont
+from PyQt6.QtCore import Qt, QRect, QSize, pyqtSignal
+from PyQt6.QtGui import QColor, QFont, QIcon
 from PyQt6.QtWidgets import (
     QWidget, QFrame, QLabel, QCheckBox, QVBoxLayout, QHBoxLayout,
     QScrollArea, QToolButton, QSizePolicy, QComboBox, QApplication,
@@ -9,6 +9,7 @@ from PyQt6.QtWidgets import (
 
 from google_fonts import ensure_font
 from theme import CAT
+from control_icons import make_control_icon
 
 
 def _hex_to_rgb(value):
@@ -161,31 +162,35 @@ class OverlayWindow(QWidget):
         self.act_combo.currentIndexChanged.connect(self._on_combo_changed)
         self.progress_label = QLabel("")
         self.progress_label.setObjectName("Progress")
+        # Header/footer controls use flat drawn icons (see control_icons); their
+        # pixmaps are (re)generated in apply_style so they track the user's
+        # "Icon size" and the theme colour. ``_icon_kind`` tags each button.
         self.prev_btn = QToolButton()
         self.prev_btn.setObjectName("PrevBtn")
-        self.prev_btn.setText("⏮")  # previous act
+        self.prev_btn._icon_kind = "prev"
         self.prev_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.prev_btn.setToolTip("Go to previous act")
         self.prev_btn.clicked.connect(self._prev_act)
         self.next_btn = QToolButton()
         self.next_btn.setObjectName("NextBtn")
-        self.next_btn.setText("⏭")  # next act
+        self.next_btn._icon_kind = "next"
         self.next_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.next_btn.setToolTip("Go to next act")
         self.next_btn.clicked.connect(self._next_act)
         self.gear_btn = QToolButton()
         self.gear_btn.setObjectName("GearBtn")
-        self.gear_btn.setText("⚙")  # gear
+        self.gear_btn._icon_kind = "gear"
         self.gear_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.gear_btn.setToolTip("Open settings")
         self.gear_btn.clicked.connect(self._open_settings)
         self.lock_btn = QToolButton()
         self.lock_btn.setObjectName("LockBtn")
+        self.lock_btn._icon_kind = "unlock"
         self.lock_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.lock_btn.clicked.connect(self._toggle_lock)
         self.exit_btn = QToolButton()
         self.exit_btn.setObjectName("ExitBtn")
-        self.exit_btn.setText("✕")  # exit
+        self.exit_btn._icon_kind = "exit"
         self.exit_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.exit_btn.setToolTip("Exit")
         self.exit_btn.clicked.connect(self._quit)
@@ -456,7 +461,22 @@ class OverlayWindow(QWidget):
         for row in self.item_widgets:
             row.set_base_font(base_font)
 
+        self._refresh_control_icons(color, control_size)
         self.hint_label.setVisible(self.resize_enabled)
+
+    def _refresh_control_icons(self, color, control_size):
+        """(Re)draw the flat header/footer icons at the current size + colour.
+
+        Scaled up a touch from the old glyph font size so the drawn shapes read
+        clearly; QToolButton centres the pixmap with no text.
+        """
+        px = max(14, int(round(control_size * 1.1)))
+        # The lock button shows its current state; everything else is fixed.
+        self.lock_btn._icon_kind = "lock" if self.locked else "unlock"
+        for btn in (self.prev_btn, self.next_btn, self.gear_btn,
+                    self.lock_btn, self.exit_btn):
+            btn.setIcon(QIcon(make_control_icon(btn._icon_kind, px, color)))
+            btn.setIconSize(QSize(px, px))
 
     def set_resize_enabled(self, enabled):
         self.resize_enabled = enabled
@@ -600,12 +620,16 @@ class OverlayWindow(QWidget):
 
     def _update_lock_button(self):
         """Refresh the lock button's icon and tooltip to match state."""
-        if self.locked:
-            self.lock_btn.setText("🔒")
-            self.lock_btn.setToolTip("Unlock overlay position")
-        else:
-            self.lock_btn.setText("🔓")
-            self.lock_btn.setToolTip("Lock overlay position")
+        self.lock_btn.setToolTip(
+            "Unlock overlay position" if self.locked else "Lock overlay position"
+        )
+        # Redraw the closed/open padlock at the current size + theme colour.
+        control_size = max(6, int(round(self.state.config.get("control_size", 20))))
+        px = max(14, int(round(control_size * 1.1)))
+        self.lock_btn._icon_kind = "lock" if self.locked else "unlock"
+        self.lock_btn.setIcon(QIcon(make_control_icon(
+            self.lock_btn._icon_kind, px, CAT["text"])))
+        self.lock_btn.setIconSize(QSize(px, px))
 
     def sync_lock_from_config(self):
         """Re-read the locked state from config and refresh the button."""
